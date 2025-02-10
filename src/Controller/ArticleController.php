@@ -39,7 +39,14 @@ final class ArticleController extends AbstractController
             $safeFilename = $slugger->slug($originalFilename);
             $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
-       
+            try {
+                $imageFile->move(
+                    $this->getParameter('uploads_directory'), // Directory where images are stored
+                    $newFilename
+                );
+            } catch (FileException $e) {
+                // Handle error if file upload fails
+            }
 
             $article->setImage($newFilename);
         }

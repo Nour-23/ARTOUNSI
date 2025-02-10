@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Symfony\Component\String\Slugger\SluggerInterface;
+
 use App\Repository\CategorieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

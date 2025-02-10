@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Categorie;
+use App\Entity\Article;
+
 use App\Form\CategorieType;
 use App\Repository\CategorieRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -69,13 +71,32 @@ final class CategorieController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_categorie_delete', methods: ['POST'])]
-    public function delete(Request $request, Categorie $categorie, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Categorie $categorie, EntityManagerInterface $entityManager, CategorieRepository $categorieRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$categorie->getId(), $request->getPayload()->getString('_token'))) {
+            // Find the "None" category (create one if it doesn't exist)
+            $noneCategory = $categorieRepository->findOneBy(['nom' => 'None']);
+    
+            if (!$noneCategory) {
+                $noneCategory = new Categorie();
+                $noneCategory->setNom('None');
+                $entityManager->persist($noneCategory);
+                $entityManager->flush();
+            }
+    
+            // Update articles to use "None" category instead of deleting
+            foreach ($categorie->getArticles() as $article) {
+                $article->setCategorie($noneCategory);
+            }
+    
+            $entityManager->flush();
+    
+            // Now remove the category safely
             $entityManager->remove($categorie);
             $entityManager->flush();
         }
-
+    
         return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
     }
+    
 }

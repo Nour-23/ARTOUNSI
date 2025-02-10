@@ -8,11 +8,13 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+                
                 <th>Nom</th>
                 <th>Description</th>
                 <th>Prix</th>
                 <th>Nbrearticle</th>
+                <th>Categorie</th>
+
                 <th>Image</th>
                 <th>Publiactiondate</th>
                 <th>actions</th>
@@ -21,12 +23,20 @@
         <tbody>
         {% for article in articles %}
             <tr>
-                <td>{{ article.id }}</td>
+                
                 <td>{{ article.nom }}</td>
                 <td>{{ article.description }}</td>
                 <td>{{ article.prix }}</td>
                 <td>{{ article.nbrearticle }}</td>
-                <td>{{ article.image }}</td>
+                <td>{{ article.categorie.nom }}</td>
+
+                    <td>
+                        {% if article.image %}
+                            <img src="{{ asset('uploads/images/' ~ article.image) }}" alt="{{ article.nom }}" width="100">
+                        {% else %}
+                            No image
+                        {% endif %}
+                    </td>
                 <td>{{ article.publiactiondate ? article.publiactiondate|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('app_article_show', {'id': article.id}) }}">show</a>
