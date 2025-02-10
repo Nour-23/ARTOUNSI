@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Compte supprimé{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="alert alert-success text-center">
+        <h2>Votre compte a été supprimé avec succès.</h2>
+        <p>Nous sommes désolés de vous voir partir. Vous pouvez toujours revenir en créant un nouveau compte.</p>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_home') }}" class="btn btn-primary">Retour à l'accueil</a>
+    </div>
+</div>
+{% endblock %}

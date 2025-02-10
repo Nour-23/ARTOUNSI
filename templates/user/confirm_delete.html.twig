@@ -1,0 +1,8 @@
+{# templates/user/confirm_delete.html.twig #}
+<h3>Êtes-vous sûr de vouloir supprimer votre compte ?</h3>
+<form action="{{ path('app_delete_account', {'id': user.id}) }}" method="POST">
+    <label for="password">Veuillez entrer votre mot de passe pour confirmer :</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">Supprimer mon compte</button>
+</form>
+<a href="{{ path('app_profile', {'id': user.id}) }}">Annuler</a>

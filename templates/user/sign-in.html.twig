@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+    <h2 class="text-center">Connexion</h2>
+
+    <div class="container d-flex justify-content-center">
+        <div class="card p-4 shadow" style="width: 400px;">
+            {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_row(form.email) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_row(form.password) }}
+                </div>
+                <div class="d-grid">
+                    {{ form_row(form.submit) }}
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
