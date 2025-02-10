@@ -1,17 +1,42 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Welcome!{% endblock %}</title>
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
+    <link rel="icon" type="image/x-icon" href="{{ asset('FrontOffice/assets/favicon.ico') }}" />
+    
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet">
+    
+    <!-- Core theme CSS -->
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('FrontOffice/css/styles.css') }}">
+        <link rel="stylesheet" href="{{ asset('FrontOffice/startbootstrap-agency-gh-pages/css/styles.css') }}">
+    {% endblock %}
+</head>
+<body id="page-top">
+
+    <!-- Include Navbar -->
+    {% include 'partials/navbar.html.twig' %}
+
+    <main>
         {% block body %}{% endblock %}
-    </body>
+    </main>
+
+    <footer class="footer_section text-center">
+        <p>&copy; 2025 All Rights Reserved.</p>
+    </footer>
+
+    {% block javascripts %}
+        <script src="{{ asset('FrontOffice/js/jquery-3.4.1.min.js') }}"></script>
+        <script src="{{ asset('FrontOffice/js/bootstrap.js') }}"></script>
+        <script src="{{ asset('FrontOffice/js/scripts.js') }}"></script>
+    {% endblock %}
+</body>
 </html>
