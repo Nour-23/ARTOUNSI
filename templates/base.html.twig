@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        
+        {% block stylesheets %}
+            <style>
+                body {
+                    background-color: white;
+                    color: black;
+                    font-family: 'Arial', sans-serif;
+                    font-size: 1.5rem; /* Grande taille de police */
+                    line-height: 1.6; /* Espacement des lignes */
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .container {
+                    margin-top: 50px;
+                }
+
+                .card {
+                    background-color: white;
+                    border-radius: 10px;
+                    padding: 20px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+
+                .form-label {
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    color: black;
+                }
+
+                .form-control {
+                    font-size: 1.5rem;
+                    padding: 1rem;
+                    margin-bottom: 1.5rem;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                }
+
+                .btn-primary {
+                    font-size: 1.5rem;
+                    padding: 1rem 2rem;
+                    background-color: #ff0000 !important; /* Changer la couleur bleue par rouge avec !important */
+                    border: none;
+                    border-radius: 8px;
+                }
+
+                .btn-primary:hover {
+                    background-color: #cc0000 !important; /* Hover en rouge plus foncé */
+                }
+
+                h2 {
+                    font-size: 2.5rem;
+                    font-weight: bold;
+                    color: black;
+                }
+
+                /* Assurer que toute autre couleur bleue est remplacée */
+                a, .btn-link, .btn-outline-primary {
+                    color: #ff0000 !important; /* Remplacer le bleu par rouge pour les liens et boutons */
+                }
+
+                .alert-primary {
+                    background-color: #ff0000 !important; /* Si des alertes utilisent un fond bleu, les rendre rouges */
+                    color: white !important;
+                }
+                
+                .text-primary {
+                    color: #ff0000 !important; /* Remplacer le texte bleu par du rouge */
+                }
+
+                .bg-primary {
+                    background-color: #ff0000 !important; /* Remplacer les fonds bleus */
+                }
+            </style>
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="container">
+            {% block body %}{% endblock %}
+        </div>
+    </body>
+</html>
+

@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Offres{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="background-color: white;">
+        <h2 class="text-center mb-4 text-dark">📋 Liste des Offres</h2>
+
+        <!-- Affichage des messages flash -->
+        {% for message in app.flashes('message') %}
+            <div class="alert alert-success text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <!-- Bouton d'ajout d'une nouvelle offre -->
+        <div class="d-flex justify-content-end mb-4">
+            <a href="{{ path('create_offre') }}" class="btn btn-success shadow-sm px-4 py-2">
+                ➕ Ajouter une Offre
+            </a>
+        </div>
+
+        <!-- Tableau des offres -->
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered text-center">
+                <thead class="bg-light">
+                    <tr class="text-dark">
+                        <th scope="col" class="py-3">#</th>
+                        <th scope="col" class="py-3">Titre</th>
+                        <th scope="col" class="py-3">Catégorie</th>
+                        <th scope="col" class="py-3">Libellé</th>
+                        <th scope="col" class="py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offre in offres %}
+                        <tr class="align-middle">
+                            <th scope="row">{{ loop.index }}</th>
+                            <td class="fw-semibold">{{ offre.title }}</td>
+                            <td>{{ offre.category ? offre.category.name : 'Aucune' }}</td>
+                            <td>{{ offre.category ? offre.category.libelle : 'Non défini' }}</td>
+                            <td class="d-flex justify-content-center gap-2">
+                                <a href="{{ path('edit-offre', {id: offre.id}) }}" class="btn btn-outline-warning btn-sm px-3">
+                                    ✏️ Modifier
+                                </a>
+                                <a href="{{ path('delete_offre', { id: offre.id }) }}" 
+                                   class="btn btn-outline-danger btn-sm px-3"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
+                                    🗑️ Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <em>Aucune offre disponible.</em>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
