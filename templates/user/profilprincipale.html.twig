@@ -19,11 +19,11 @@
        <!-- Boutons d'action -->
 <div class="d-grid gap-3 col-6 mx-auto">
     <a href="{{ path('app_edit_profile', {'id': user.id}) }}" class="btn btn-primary">Modifier le profil</a>
-    <a href="{{ path('app_reset_password', {'id': user.id}) }}" class="btn btn-warning">Réinitialiser le mot de passe</a>
+<a href="{{ user.resetToken ? path('app_reset_password', {'token': user.resetToken}) : '#' }}" class="btn btn-warning">Réinitialiser le mot de passe</a>
     <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
 <form action="{{ path('app_delete_account', {'id': user.id}) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
     <input type="hidden" name="password" value="USER_PASSWORD_HERE"> {# Replace or use a form field #}
-    <button type="submit" class="btn btn-danger">Supprimer mon compte</button>
+<a href="{{ path('app_delete_account') }}"class="btn btn-primary">Supprimer le profil</a>
 </form>
 </div>
 

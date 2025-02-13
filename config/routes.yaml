@@ -5,8 +5,11 @@ controllers:
     type: attribute
 google_login:
     path: /connect/google
-    controller: App\Controller\SecurityController::connectGoogle
+    controller: App\Controller\UserController::connectGoogle
 
 connect_google_check:
     path: /connect/google/check
+app_login:
+    path: /login
+    controller: App\Controller\UserController::login
 

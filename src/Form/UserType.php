@@ -104,6 +104,7 @@ class UserType extends AbstractType
             ])
             ->add('role', ChoiceType::class, [
                 'choices' => [
+                    'Selectionner un role'=>'',
                     'Client' => 'ROLE_CLIENT',
                     'Artiste/Artisan' => 'ROLE_ARTISTE',
                     'Collaborateur' => 'ROLE_COLLABORATEUR',
@@ -134,7 +135,7 @@ class UserType extends AbstractType
             
             
             ->add('submit', SubmitType::class, [
-                'label' => 'S\'inscrire',
+                'label' => 'Yalla, inscrivez-vous !',
             ]);
     }
 

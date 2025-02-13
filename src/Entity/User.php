@@ -57,7 +57,33 @@ private ?\DateTimeImmutable $dateNaissance = null;
     private ?string $adresse = null;
     
    
-    
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $tokenExpiry = null;
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
+        return $this;
+    }
+
+    public function getTokenExpiry(): ?\DateTimeInterface
+    {
+        return $this->tokenExpiry;
+    }
+
+    public function setTokenExpiry(?\DateTimeInterface $tokenExpiry): self
+    {
+        $this->tokenExpiry = $tokenExpiry;
+        return $this;
+    }
     
 
     #[ORM\Column(length: 255)]

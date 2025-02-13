@@ -10,7 +10,10 @@ security:
 
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            pattern: ^/(_(profiler|wdt)|css|images|js)/ 
+            security: false
+        login:
+            pattern: ^/login
             security: false
 
         main:
@@ -18,15 +21,28 @@ security:
             provider: app_user_provider
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
-            logout:
-                path: app_logout  # Make sure this matches the route in SecurityController
-                target: app_login # Redirect to login after logout
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                username_parameter: _email
+                password_parameter: _password
+                enable_csrf: true
+                default_target_path: app_profile_principale  # Ajoute cette ligne
 
- 
+            logout:
+                path: app_logout  # Assure-toi que cette route existe
+                # where to redirect after logout
+                # target: app_any_route
 
         oauth:
             pattern: ^/oauth/check
             stateless: true
             provider: app_user_provider
+
     access_control:
-        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+        # Protect routes
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/profile, roles: ROLE_USER }
+
+monolog:
+    channels: [security]
