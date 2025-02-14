@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Formation{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Détails de la Formation</h1>
+
+    <div class="card shadow-lg p-4">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>ID</th>
+                    <td>{{ formation.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ formation.nom }}</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>{{ formation.description }}</td>
+                </tr>
+                <tr>
+                    <th>Date de début</th>
+                    <td>{{ formation.dateDebut ? formation.dateDebut|date('d-m-Y') : 'Non définie' }}</td>
+                </tr>
+                <tr>
+                    <th>Durée</th>
+                    <td>{{ formation.duree }}</td>
+                </tr>
+                <tr>
+                    <th>Lieu</th>
+                    <td>{{ formation.lieu }}</td>
+                </tr>
+                <tr>
+                    <th>Formateur</th>
+                    <td>{{ formation.formateur }}</td>
+                </tr>
+                <tr>
+                    <th>Tarif</th>
+                    <td>{{ formation.tarif }} TND</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="{{ path('app_formation_index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+        <a href="{{ path('app_formation_edit', {'id': formation.id}) }}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Modifier
+        </a>
+        {{ include('formation/_delete_form.html.twig') }}
+    </div>
+</div>
+{% endblock %}

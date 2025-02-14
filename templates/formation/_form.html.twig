@@ -1,0 +1,56 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-3 text-center">{{ button_label|default('Enregistrer') }} une Formation</h2>
+
+        <div class="mb-3">
+            {{ form_label(form.nom, 'Nom de la formation', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Peinture sur soie'}}) }}
+            {{ form_errors(form.nom) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4', 'placeholder': 'Brève description de la formation'}}) }}
+            {{ form_errors(form.description) }}
+        </div>
+
+        <div class="mb-3">
+    {{ form_label(form.dateDebut, 'Date de début', {'label_attr': {'class': 'form-label'}}) }}
+    {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control', 'type': 'date'}}) }}
+    {{ form_errors(form.dateDebut) }}
+        </div>
+
+
+        <div class="mb-3">
+            {{ form_label(form.duree, 'Durée (en jours)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.duree, {'attr': {'class': 'form-control', 'type': 'number', 'min': '1'}}) }}
+            {{ form_errors(form.duree) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.lieu, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Centre culturel de Tunis'}}) }}
+            {{ form_errors(form.lieu) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.formateur, 'Formateur', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.formateur, {'attr': {'class': 'form-control', 'placeholder': 'Nom du formateur'}}) }}
+            {{ form_errors(form.formateur) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.tarif, 'Tarif (TND)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.tarif, {'attr': {'class': 'form-control', 'type': 'number', 'min': '0'}}) }}
+            {{ form_errors(form.tarif) }}
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-success">
+                <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+            </button>
+        </div>
+    </div>
+
+{{ form_end(form) }}
