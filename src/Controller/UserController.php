@@ -26,12 +26,11 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\AbstractType;
-use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Validator\Constraints\Length;
+
+
 use App\Repository\UserRepository;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserController extends AbstractController
 { private const SCOPES = [
@@ -55,6 +54,17 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $userExist = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+
+            if ($userExist) {
+                if ($userExist->isArchived()) {
+                    $this->addFlash('error', 'Ce compte est archivé et ne peut pas être réinscrit.');
+                    return $this->redirectToRoute('app_login');
+                } else {
+                    $this->addFlash('error', 'Un compte avec cet email existe déjà.');
+                    return $this->redirectToRoute('app_login');
+                }
+            }
             $user->setRoles(['ROLE_CLIENT']); 
 
             $photo = $form->get('photo')->getData();
@@ -78,6 +88,10 @@ class UserController extends AbstractController
 
             return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
         }
+        $userExist = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+
+
+
 
         return $this->render('user/register.html.twig', [
             'form' => $form->createView(),
@@ -95,6 +109,8 @@ public function login(
     if ($user instanceof User) {
         return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
     }
+   
+    
 
     // Création du formulaire de connexion
     $form = $this->createForm(LoginFormType::class);
@@ -107,21 +123,24 @@ public function login(
     // Vérification si le formulaire est soumis et valide
     if ($form->isSubmitted() && $form->isValid()) {
         // Récupérer les données du formulaire
-        
+    
         $email = $form->get('email')->getData();
         $password = $form->get('password')->getData(); // Assurez-vous que votre formulaire a un champ "password"
 
          // ✅ Vérification si l'email existe en base
-         $user = $userRepository->findOneBy(['email' => $email]);
-    
-         if (!$user) {
-             $this->addFlash('error', 'Cet email est introuvable.');
-             return $this->render('security/login.html.twig', [
-                 'form' => $form->createView(),
-                 'last_username' => $lastUsername,
-                 'error' => 'Cet email est introuvable.',
-             ]);
-         }
+            $user = $userRepository->findOneBy(['email' => $email]);
+            if ($user->isArchived()) {
+                $this->addFlash('error', 'Ce compte est archivé et ne peut plus être utilisé.');
+                return $this->redirectToRoute('app_login');
+            }
+            if (!$user) {
+                $this->addFlash('error', 'Cet email est introuvable.');
+                return $this->render('security/login.html.twig', [
+                    'form' => $form->createView(),
+                    'last_username' => $lastUsername,
+                    'error' => 'Cet email est introuvable.',
+                ]);
+            }
 
         // Vérifier si le mot de passe est correct
         if (!password_verify($password, $user->getPassword())) {
@@ -220,51 +239,54 @@ public function login(
             'user' => $user
         ]);
     }
-            #[Route('/reset-password', name: 'app_request_reset_password')]
-    public function requestResetPassword(Request $request, MailerInterface $mailer): Response
-    {
+    #[Route('/reset-password', name: 'app_request_reset_password')]
+    public function requestResetPassword(
+        Request $request, 
+        MailerInterface $mailer, 
+        EntityManagerInterface $entityManager, 
+        UrlGeneratorInterface $urlGenerator
+    ): Response {
         $form = $this->createFormBuilder()
             ->add('email', EmailType::class, ['label' => 'Votre email'])
             ->add('submit', SubmitType::class, ['label' => 'Envoyer'])
             ->getForm();
 
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
-            $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+            $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
             if ($user) {
-                $token = Uuid::v4()->toRfc4122();
+                $token = bin2hex(random_bytes(32));
                 $user->setResetToken($token);
-                $expiryDate = new \DateTime();
-                $expiryDate->modify('+1 hour');
-                $user->setTokenExpiry($expiryDate);
-                $this->entityManager->flush();
+                $user->setTokenExpiry((new \DateTime())->modify('+1 hour'));
+                $entityManager->flush();
 
-                $resetUrl = $this->generateUrl('app_reset_password', ['token' => $token], true);
+                $resetUrl = $urlGenerator->generate('app_reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+
                 $emailMessage = (new Email())
                     ->from('no-reply@yourapp.com')
                     ->to($user->getEmail())
                     ->subject('Réinitialisation de votre mot de passe')
-                    ->html("Cliquez sur <a href='" . $resetUrl . "'>ce lien</a> pour réinitialiser votre mot de passe.");
-
+                    ->html("Cliquez sur <a href='" . $resetUrl . "'>ce lien</a> pour réinitialiser votre mot de passe."); 
                 $mailer->send($emailMessage);
-                $this->addFlash('success', 'Un e-mail de réinitialisation a été envoyé.');
-            } else {
-                $this->addFlash('error', 'L\'utilisateur avec cet e-mail n\'existe pas.');
             }
-        }
 
-        return $this->render('security/request_reset_password.html.twig', [
+            $this->addFlash('success', 'Si cet e-mail est enregistré, vous recevrez un lien de réinitialisation.');
+        }
+  return $this->render('security/request_reset_password.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
     #[Route('/reset-password/{token}', name: 'app_reset_password')]
-    public function resetPassword(Request $request, string $token, UserPasswordHasherInterface $passwordHasher): Response
-    {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['resetToken' => $token]);
+    public function resetPassword(
+        Request $request, 
+        string $token, 
+        UserPasswordHasherInterface $passwordHasher, 
+        EntityManagerInterface $entityManager
+    ): Response {
+        $user = $entityManager->getRepository(User::class)->findOneBy(['resetToken' => $token]);
 
         if (!$user || $user->getTokenExpiry() < new \DateTime()) {
             $this->addFlash('error', 'Token invalide ou expiré.');
@@ -272,7 +294,12 @@ public function login(
         }
 
         $form = $this->createFormBuilder()
-            ->add('password', PasswordType::class, ['label' => 'Nouveau mot de passe'])
+            ->add('password', PasswordType::class, [
+                'label' => 'Nouveau mot de passe',
+                'constraints' => [
+                    new Length(['min' => 8, 'minMessage' => 'Votre mot de passe doit contenir au moins 8 caractères.'])
+                ],
+            ])
             ->add('submit', SubmitType::class, ['label' => 'Réinitialiser'])
             ->getForm();
 
@@ -284,7 +311,7 @@ public function login(
             $user->setPassword($hashedPassword);
             $user->setResetToken(null);
             $user->setTokenExpiry(null);
-            $this->entityManager->flush();
+            $entityManager->flush();
 
             $this->addFlash('success', 'Votre mot de passe a été mis à jour.');
             return $this->redirectToRoute('app_login');
@@ -295,59 +322,14 @@ public function login(
         ]);
     }
 
-    #[Route('/profile/delete', name: 'app_delete_account', methods: ['POST'])]
-    public function deleteAccount(Request $request, UserPasswordHasherInterface $passwordHasher, Security $security): Response
-    {
-        $currentUser = $security->getUser();
-    
-        if (!$currentUser instanceof User) {
-            throw new \LogicException('Utilisateur non authentifié.');
-        }
-    
-        $password = $request->request->get('password');
-    
-        if (!$passwordHasher->isPasswordValid($currentUser, $password)) {
-            $this->addFlash('error', 'Mot de passe incorrect. Veuillez réessayer.');
-            return $this->redirectToRoute('app_confirm_delete_account');
-        }
-    
-        $this->tokenStorage->setToken(null);
-        $this->entityManager->remove($currentUser);
-        $this->entityManager->flush();
-    
-        return $this->redirectToRoute('home');
-    }
-    
-    #[Route('/profile/confirm-delete', name: 'app_confirm_delete_account')]
-public function confirmDeleteAccount(Request $request, UserPasswordHasherInterface $passwordHasher, Security $security): Response
+#[Route('/profile/archive/{id}', name: 'app_archive_user')]
+public function archiveUser(User $user): Response
 {
-    $currentUser = $security->getUser();
+    $user->setArchived(true);
+    $this->entityManager->flush();
 
-    if (!$currentUser instanceof User) {
-        throw new \LogicException('Utilisateur non authentifié.');
-    }
-
-    $form = $this->createForm(DeleteAccountType::class);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $password = $form->get('password')->getData();
-
-        if (!$passwordHasher->isPasswordValid($currentUser, $password)) {
-            $this->addFlash('error', 'Mot de passe incorrect. Veuillez réessayer.');
-            return $this->redirectToRoute('app_confirm_delete_account');
-        }
-
-        $this->tokenStorage->setToken(null);
-        $this->entityManager->remove($currentUser);
-        $this->entityManager->flush();
-
-        return $this->redirectToRoute('home');
-    }
-
-    return $this->render('user/confirm_delete.html.twig', [
-        'form' => $form->createView(),
-    ]);
+    $this->addFlash('success', 'Le compte a été archivé avec succès.');
+    return $this->redirectToRoute('app_login');
 }
 
 }

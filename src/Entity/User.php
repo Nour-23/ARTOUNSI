@@ -36,7 +36,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: "Le C.I.N est obligatoire.")]
     #[Assert\Regex(pattern: "/^\d{8}$/", message: "Le C.I.N doit contenir exactement 8 chiffres.")]
     private ?string $cin = null;
-
+    #[ORM\Column(type: 'boolean')]
+    private bool $archived = false;
+    
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
+    
+    public function setArchived(bool $archived): self
+    {
+        $this->archived = $archived;
+        return $this;
+    }
+    
     #[ORM\Column(length: 8)]
     #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
     #[Assert\Regex(pattern: "/^\d{8}$/", message: "Le numéro de téléphone doit contenir exactement 8 chiffres.")]
