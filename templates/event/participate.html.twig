@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Participer à l'événement{% endblock %}
+
+{% block body %}
+    <h1>Participer à l'événement: {{ event.name }}</h1>
+
+    {{ form_start(form) }}
+        <div>
+            {{ form_label(form.response) }}
+            {{ form_widget(form.response) }}
+        </div>
+
+        <div>
+            {{ form_label(form.feedback) }}
+            {{ form_widget(form.feedback) }}
+        </div>
+
+        <div>
+            <button class="btn">Soumettre</button>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes participations{% endblock %}
+
+{% block body %}
+    <h1>Mes participations</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Événement</th>
+                <th>Réponse</th>
+                <th>Feedback</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for participation in participations %}
+                <tr>
+                    <td>{{ participation.event.name }}</td>
+                    <td>{{ participation.response == 1 ? 'Oui' : 'Non' }}</td>
+                    <td>{{ participation.feedback }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucune participation trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

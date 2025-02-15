@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un événement{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2 class="mb-4">Modifier l'événement</h2>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {{ form_start(form, {'attr': {'class': 'form'}}) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.date) }}
+            {{ form_row(form.location) }}
+
+            
+            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

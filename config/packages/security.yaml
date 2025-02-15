@@ -1,0 +1,32 @@
+# config/packages/security.yaml
+security:
+    # The encoders section defines how to encode passwords
+    encoders:
+        App\Entity\Participant:
+            algorithm: bcrypt
+
+    # Providers define where the user data comes from
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Participant
+                property: email  # or any other field for login
+    
+    # Firewalls manage security for different parts of your app
+    firewalls:
+        # Main firewall for the whole application
+        main:
+            # Enabling session-based authentication
+            pattern: ^/
+            form_login:
+                login_path: login  # route name for login page
+                check_path: login
+            logout:
+                path: logout
+            # This will allow anonymous access to some pages
+            anonymous: true
+
+    # Access control rules based on the roles
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/event, roles: ROLE_PARTICIPANT }
