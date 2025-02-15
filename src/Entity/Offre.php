@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\OffreRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -22,17 +23,20 @@ class Offre
         minMessage: "Le titre doit contenir au moins {{ limit }} caractères.",
         maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
     )]
-    
     private ?string $title = null;
 
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Status cannot be blank.')]
     private ?string $status = 'active';
 
     #[ORM\ManyToOne(inversedBy: 'offres')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?CategoryOffre $category = null;
+#[ORM\JoinColumn(nullable: false)]
+#[Assert\NotNull(message: 'The category cannot be null.')]
+private ?CategoryOffre $category = null;
 
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $description = null;
 
 
     public function __construct()
@@ -79,6 +83,18 @@ class Offre
     public function setCategory(?categoryoffre $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

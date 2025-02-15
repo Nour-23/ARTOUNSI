@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offres Archivées{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="background-color: white;">
+        <h2 class="text-center mb-4 text-dark">📂 Offres Archivées</h2>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered text-center">
+                <thead class="bg-light">
+                    <tr class="text-dark">
+                        <th scope="col" class="py-3">#</th>
+                        <th scope="col" class="py-3">Titre</th>
+                        <th scope="col" class="py-3">Catégorie</th>
+                        <th scope="col" class="py-3">Description</th>
+                        <th scope="col" class="py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offre in offres %}
+                        <tr class="align-middle">
+                            <th scope="row">{{ loop.index }}</th>
+                            <td class="fw-semibold">{{ offre.title }}</td>
+                            <td>{{ offre.category ? offre.category.name : 'Aucune' }}</td>
+                            <td>{{ offre.description }}</td>
+                            <td class="d-flex justify-content-center gap-2">
+                                <a href="{{ path('restore_offre', {id: offre.id}) }}" class="btn btn-outline-success btn-sm px-3">
+                                    🔄 Restaurer
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <em>Aucune offre archivée.</em>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

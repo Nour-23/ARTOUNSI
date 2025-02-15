@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'Offre{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 rounded-4 p-4" style="background-color: white;">
+            <h2 class="text-center mb-4 text-dark">📄 Détails de l'Offre</h2>
+            
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID :</strong> {{ offre.id }}</li>
+                <li class="list-group-item"><strong>Nom :</strong> {{ offre.title }}</li>
+                <li class="list-group-item"><strong>Catégorie :</strong> {{ offre.category.name }}</li>
+                <li class="list-group-item"><strong>Statut :</strong> {{ offre.status }}</li>
+                <li class="list-group-item"><strong>Description :</strong> {{ offre.description }}</li>
+            </ul>
+
+            <div class="mt-4 text-center">
+                <a href="{{ path('app_main') }}" class="btn btn-primary">⬅ Retour</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}CategoryOffre index{% endblock %}
+{% block title %}Gestion des Offres et Catégories{% endblock %}
 
 {% block body %}
-    <h1>CategoryOffre index</h1>
+    <h1>Liste des Catégories</h1>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Name</th>
-                <th>Libelle</th>
-                <th>actions</th>
+                <th>Nom</th>
+                <th>Libellé</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -21,17 +21,66 @@
                 <td>{{ category_offre.name }}</td>
                 <td>{{ category_offre.libelle }}</td>
                 <td>
-                    <a href="{{ path('app_category_offre_show', {'id': category_offre.id}) }}">show</a>
-                    <a href="{{ path('app_category_offre_edit', {'id': category_offre.id}) }}">edit</a>
+                    <a href="{{ path('app_category_offre_show', {'id': category_offre.id}) }}" class="btn btn-info">Voir</a>
+                    <a href="{{ path('app_category_offre_edit', {'id': category_offre.id}) }}" class="btn btn-warning">Modifier</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4">Aucune catégorie trouvée.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_category_offre_new') }}">Create new</a>
+    <a href="{{ path('app_category_offre_new') }}" class="btn btn-success">Créer une nouvelle catégorie</a>
+
+    <hr>
+
+    <h1>Liste des Offres</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Catégorie</th>
+                <th>Description</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for offre in offres %}
+            <tr>
+                <td>{{ offre.id }}</td>
+                <td>{{ offre.title }}</td>  {# Correction ici #}
+                <td>{{ offre.category.name }}</td>  {# Correction ici #}
+                <td>{{ offre.description }}</td>
+                <td>
+                    {% if offre.status == 'archivé' %}
+                        <span class="badge bg-secondary">Archivé</span>
+                    {% else %}
+                        <span class="badge bg-success">Actif</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('edit-offre', {'id': offre.id}) }}" class="btn btn-warning">Modifier</a>
+                    
+                    {% if offre.status != 'archivé' %}
+                        <a href="{{ path('archive_offre', {'id': offre.id}) }}" class="btn btn-secondary">Archiver</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">Aucune offre trouvée.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('create_offre') }}" class="btn btn-primary">Créer une nouvelle offre</a>
 {% endblock %}
+
+

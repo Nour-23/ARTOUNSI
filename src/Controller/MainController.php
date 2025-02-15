@@ -21,13 +21,20 @@ final class MainController extends AbstractController
         $this->em = $em;
     }
     #[Route('/main', name: 'app_main')]
-    public function index(OffreRepository $offreRepo): Response
+    public function index(OffreRepository $offreRepo, EntityManagerInterface $em): Response
     {
-          //$offres= $this->em->getRepository(Offre::class)->findBy([], null, 50);
+        $categories = $em->getRepository(CategoryOffre::class)->findAll();
+        
+        // ✅ Filtrer pour récupérer uniquement les offres actives
+        $offresActives = $offreRepo->findBy(['status' => 'active']);
+    
         return $this->render('main/index.html.twig', [
-              'offres' => $offreRepo->findAll()
+            'offres' => $offresActives,  // ✅ Affiche uniquement les offres actives
+            'category_offres' => $categories
         ]);
     }
+    
+    
     #[Route('/create-offre',name: 'create_offre')]
     public function createOffre(Request $request)
     {
@@ -71,18 +78,50 @@ final class MainController extends AbstractController
        ]);
        
     }
-    #[Route('/delete-offre/{id}', name: 'delete_offre', methods: ['POST', 'GET'])]
-    public function deleteOffre(Request $request, $id): Response
+    #[Route('/archive-offre/{id}', name: 'archive_offre', methods: ['POST', 'GET'])]
+    public function archiveOffre(Request $request, $id): Response
     {
         $offre = $this->em->getRepository(Offre::class)->find($id);
         if (!$offre) {
             throw $this->createNotFoundException('Offre not found');
         }
-
-        $this->em->remove($offre);
+    
+        $offre->setStatus('archivé'); // On change le statut à "archivé"
         $this->em->flush();
-
-        $this->addFlash('message', 'Deleted successfully.');
+    
+        $this->addFlash('message', 'L\'offre a été archivée.');
         return $this->redirectToRoute('app_main');
     }
+    #[Route('/offres-archivees', name: 'liste_offres_archivees')]
+public function listeOffresArchivees(OffreRepository $offreRepo): Response
+{
+    $offresArchivees = $offreRepo->findBy(['status' => 'archivé']); // Récupérer seulement les offres archivées
+
+    return $this->render('main/archives.html.twig', [
+        'offres' => $offresArchivees
+    ]);
+}
+#[Route('/offre/{id}', name: 'app_offre_show')]
+public function show(Offre $offre): Response
+{
+    return $this->render('main/show.html.twig', [
+        'offre' => $offre,
+    ]);
+}
+#[Route('/restore-offre/{id}', name: 'restore_offre', methods: ['POST', 'GET'])]
+public function restoreOffre(Request $request, $id): Response
+{
+    $offre = $this->em->getRepository(Offre::class)->find($id);
+    if (!$offre) {
+        throw $this->createNotFoundException('Offre non trouvée');
+    }
+
+    // Changer le statut en "active"
+    $offre->setStatus('active');
+    $this->em->flush();
+
+    $this->addFlash('message', 'L\'offre a été restaurée.');
+    return $this->redirectToRoute('app_main');
+}
+ 
 }
