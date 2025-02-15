@@ -19,30 +19,34 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticators:
-                - App\Security\GoogleAuthenticator
+            
+            # Define your custom authenticator as the entry point
+            entry_point: App\Security\UserAuthAuthenticator
+
             form_login:
                 login_path: app_login
                 check_path: app_login
                 username_parameter: _email
                 password_parameter: _password
                 enable_csrf: true
-                default_target_path: app_profile_principale  # Ajoute cette ligne
+                default_target_path: /profile/principale/{id}  # Redirige vers la page souhaitée après la connexion
+                always_use_default_target_path: false  # 🔹 Force la redirection après login
+
 
             logout:
-                path: app_logout  # Assure-toi que cette route existe
-                # where to redirect after logout
-                # target: app_any_route
+                path: app_logout  # Ensure this route exists
+           # custom_authenticator: App\Security\UserAuthAuthenticator
 
-        oauth:
-            pattern: ^/oauth/check
-            stateless: true
-            provider: app_user_provider
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+                # Uncomment the next line to always enable "remember me" by default
+                # always_remember_me: true
 
     access_control:
         # Protect routes
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/profile, roles: ROLE_USER }
 
 monolog:
     channels: [security]

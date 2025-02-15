@@ -31,12 +31,11 @@ use Symfony\Component\Form\AbstractType;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Repository\UserRepository;
-
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserController extends AbstractController
 { private const SCOPES = [
     'google' => ['openid', 'profile', 'email'],
-    'facebook' => ['public_profile', 'email'],
     // Add other services here as needed
 ];
     private $tokenStorage;
@@ -56,6 +55,8 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setRoles(['ROLE_CLIENT']); 
+
             $photo = $form->get('photo')->getData();
             if ($photo) {
                 try {
@@ -81,77 +82,64 @@ class UserController extends AbstractController
         return $this->render('user/register.html.twig', [
             'form' => $form->createView(),
         ]);
-    }#[Route(path: '/login', name: 'app_login')]
-    public function login(
-        Request $request, 
-        AuthenticationUtils $authenticationUtils, 
-        UserRepository $userRepository, 
-        Security $security
-    ): Response {
-        // ✅ Vérification si l'utilisateur est déjà connecté
-        $user = $security->getUser();
-        if ($user instanceof User) {
-            // Si l'utilisateur est déjà connecté, redirige vers son profil
-            return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
-        }
-    
-        // Création du formulaire de connexion
-        $form = $this->createForm(LoginFormType::class);
-        $form->handleRequest($request);
-    
-        // Récupération des erreurs et du dernier nom d'utilisateur
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
-    
-        // Si le formulaire est soumis et non valide
-        if ($form->isSubmitted() && !$form->isValid()) {
-            return $this->render('security/login.html.twig', [
-                'form' => $form->createView(),
-                'last_username' => $lastUsername,
-                'error' => $error,
-            ]);
-        }
-    
-        // Si le formulaire est soumis
-        if ($form->isSubmitted()) {
-            $email = $form->get('email')->getData();
-    
-            // ✅ Vérification si l'email est vide (double sécurité)
-            if (empty($email)) {
-                $this->addFlash('error', 'Veuillez entrer une adresse email.');
-                return $this->render('security/login.html.twig', [
-                    'form' => $form->createView(),
-                    'last_username' => $lastUsername,
-                    'error' => 'Veuillez entrer une adresse email.',
-                ]);
-            }
-    
-            // ✅ Vérification si l'email existe en base
-            $user = $userRepository->findOneBy(['email' => $email]);
-    
-            if (!$user) {
-                $this->addFlash('error', 'Cet email est introuvable.');
-                return $this->render('security/login.html.twig', [
-                    'form' => $form->createView(),
-                    'last_username' => $lastUsername,
-                    'error' => 'Cet email est introuvable.',
-                ]);
-            }
-    
-            // ✅ Si la connexion est réussie, Symfony va rediriger l'utilisateur automatiquement.
-            // Nous n'avons plus besoin d'un deuxième contrôle ici, puisque Symfony gère l'authentification
-            return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
-        }
-    
-        // Si rien n'est soumis, simplement afficher le formulaire
-        return $this->render('security/login.html.twig', [
-            'form' => $form->createView(),
-            'last_username' => $lastUsername,
-            'error' => $error,
-        ]);
     }
-    
+    #[Route('/login', name: 'app_login')]
+public function login(
+    Request $request, 
+    AuthenticationUtils $authenticationUtils, 
+    UserRepository $userRepository, 
+    Security $security
+): Response {
+    // Vérifier si l'utilisateur est déjà connecté
+    $user = $security->getUser(); 
+    if ($user instanceof User) {
+        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+    }
 
+    // Création du formulaire de connexion
+    $form = $this->createForm(LoginFormType::class);
+    $form->handleRequest($request);
+
+    // Récupération des erreurs d'authentification
+    $error = $authenticationUtils->getLastAuthenticationError();
+    $lastUsername = $authenticationUtils->getLastUsername();
+
+    // Vérification si le formulaire est soumis et valide
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Récupérer les données du formulaire
+        
+        $email = $form->get('email')->getData();
+        $password = $form->get('password')->getData(); // Assurez-vous que votre formulaire a un champ "password"
+
+         // ✅ Vérification si l'email existe en base
+         $user = $userRepository->findOneBy(['email' => $email]);
+    
+         if (!$user) {
+             $this->addFlash('error', 'Cet email est introuvable.');
+             return $this->render('security/login.html.twig', [
+                 'form' => $form->createView(),
+                 'last_username' => $lastUsername,
+                 'error' => 'Cet email est introuvable.',
+             ]);
+         }
+
+        // Vérifier si le mot de passe est correct
+        if (!password_verify($password, $user->getPassword())) {
+            $this->addFlash('error', 'Mot de passe incorrect.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Redirection vers le profil après une connexion réussie
+        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+    }
+
+    // Affichage du formulaire avec les erreurs
+    return $this->render('security/login.html.twig', [
+        'form' => $form->createView(),
+        'last_username' => $lastUsername,
+        'error' => $error,
+    ]);
+}
 
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
@@ -163,23 +151,20 @@ class UserController extends AbstractController
  
    
   
-
-    #[Route('/profile/redirect/{id}', name: 'profile_redirect')]
-    public function profileRedirect(User $user): Response
+    #[Route('/profile/redirect', name: 'profile_redirect')]
+    public function profileRedirect(): Response
     {
-        $roles = $user->getRoles();
+        $user = $this->getUser();
 
-        if (in_array('ROLE_ADMIN', $roles)) {
-            return $this->redirectToRoute('admin_dashboard');
-        } elseif (in_array('ROLE_CLIENT', $roles)) {
-            return $this->redirectToRoute('client_profile', ['id' => $user->getId()]);
-        } elseif (in_array('ROLE_ARTISAN', $roles)) {
-            return $this->redirectToRoute('artisan_profile', ['id' => $user->getId()]);
-        } elseif (in_array('ROLE_COLLABORATEUR', $roles)) {
-            return $this->redirectToRoute('collaborateur_profile', ['id' => $user->getId()]);
+        if (!$user || !$user instanceof User) {
+            return $this->redirectToRoute('app_login');
         }
 
-        return $this->redirectToRoute('home');
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            return $this->redirectToRoute('admin_dashboard');
+        }
+
+        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
     }
 
     #[Route('/profile/{id<\d+>}', name: 'app_profile')]
@@ -220,16 +205,22 @@ class UserController extends AbstractController
             'user' => $user,
         ]);
     }
-
     #[Route('/profile/principale/{id}', name: 'app_profile_principale')]
-    public function profilePrincipale(User $user): Response
+    public function profilePrincipale(int $id, UserRepository $userRepository): Response
     {
+        // Récupérer l'utilisateur par son ID
+        $user = $userRepository->find($id);
+    
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
+    
+        // Passer l'utilisateur à la vue
         return $this->render('user/profilprincipale.html.twig', [
-            'user' => $user,
+            'user' => $user
         ]);
     }
-
-    #[Route('/reset-password', name: 'app_request_reset_password')]
+            #[Route('/reset-password', name: 'app_request_reset_password')]
     public function requestResetPassword(Request $request, MailerInterface $mailer): Response
     {
         $form = $this->createFormBuilder()

@@ -224,7 +224,7 @@ private ?string $photo = null;
 
     public function setRoles(array $roles): static
     {
-        $this->roles = array_intersect($roles, ["ROLE_CLIENT", "ROLE_ARTISTE", "ROLE_COLLABORATEUR", "ROLE_ADMIN"]);
+        $this->roles = array_intersect($roles, ["ROLE_CLIENT", "ROLE_ADMIN"]);
         return $this;
     }
 

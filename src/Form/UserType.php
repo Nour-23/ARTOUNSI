@@ -106,8 +106,7 @@ class UserType extends AbstractType
                 'choices' => [
                     'Selectionner un role'=>'',
                     'Client' => 'ROLE_CLIENT',
-                    'Artiste/Artisan' => 'ROLE_ARTISTE',
-                    'Collaborateur' => 'ROLE_COLLABORATEUR',
+                    
                    
                 ],
                 'label' => 'Rôle',
