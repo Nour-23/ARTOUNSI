@@ -1,7 +1,15 @@
 parameters:
     profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile_pictures'
-
+    mailer_dsn: '%env(MAILER_DSN)%'
 services:
+    Symfony\Component\Mailer\Transport\TransportInterface:
+        factory: 'Symfony\Component\Mailer\Transport\TransportFactoryInterface::fromDsn'
+        arguments:
+            - '%mailer_dsn%'
+    
+    Symfony\Component\Mailer\Mailer:
+        arguments:
+            $transport: '@Symfony\Component\Mailer\Transport\TransportInterface'
     _defaults:
         autowire: true
         autoconfigure: true
@@ -35,3 +43,4 @@ services:
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads/photos'
+

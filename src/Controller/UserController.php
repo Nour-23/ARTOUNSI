@@ -133,20 +133,19 @@ public function login(
                 $this->addFlash('error', 'Ce compte est archivé et ne peut plus être utilisé.');
                 return $this->redirectToRoute('app_login');
             }
-            if (!$user) {
-                $this->addFlash('error', 'Cet email est introuvable.');
-                return $this->render('security/login.html.twig', [
-                    'form' => $form->createView(),
-                    'last_username' => $lastUsername,
-                    'error' => 'Cet email est introuvable.',
-                ]);
-            }
+          
+        if (!$user) {
+            // Si l'utilisateur n'existe pas, rediriger vers le formulaire de réinitialisation
+            $this->addFlash('error', 'Cet email est introuvable.');
+            return $this->redirectToRoute('app_forgot_password_request');
+        }
 
-        // Vérifier si le mot de passe est correct
+        // Vérification du mot de passe
         if (!password_verify($password, $user->getPassword())) {
             $this->addFlash('error', 'Mot de passe incorrect.');
             return $this->redirectToRoute('app_login');
         }
+
 
         // Redirection vers le profil après une connexion réussie
         return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
@@ -237,88 +236,6 @@ public function login(
         // Passer l'utilisateur à la vue
         return $this->render('user/profilprincipale.html.twig', [
             'user' => $user
-        ]);
-    }
-    #[Route('/reset-password', name: 'app_request_reset_password')]
-    public function requestResetPassword(
-        Request $request, 
-        MailerInterface $mailer, 
-        EntityManagerInterface $entityManager, 
-        UrlGeneratorInterface $urlGenerator
-    ): Response {
-        $form = $this->createFormBuilder()
-            ->add('email', EmailType::class, ['label' => 'Votre email'])
-            ->add('submit', SubmitType::class, ['label' => 'Envoyer'])
-            ->getForm();
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $email = $form->get('email')->getData();
-            $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-
-            if ($user) {
-                $token = bin2hex(random_bytes(32));
-                $user->setResetToken($token);
-                $user->setTokenExpiry((new \DateTime())->modify('+1 hour'));
-                $entityManager->flush();
-
-                $resetUrl = $urlGenerator->generate('app_reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
-
-                $emailMessage = (new Email())
-                    ->from('no-reply@yourapp.com')
-                    ->to($user->getEmail())
-                    ->subject('Réinitialisation de votre mot de passe')
-                    ->html("Cliquez sur <a href='" . $resetUrl . "'>ce lien</a> pour réinitialiser votre mot de passe."); 
-                $mailer->send($emailMessage);
-            }
-
-            $this->addFlash('success', 'Si cet e-mail est enregistré, vous recevrez un lien de réinitialisation.');
-        }
-  return $this->render('security/request_reset_password.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[Route('/reset-password/{token}', name: 'app_reset_password')]
-    public function resetPassword(
-        Request $request, 
-        string $token, 
-        UserPasswordHasherInterface $passwordHasher, 
-        EntityManagerInterface $entityManager
-    ): Response {
-        $user = $entityManager->getRepository(User::class)->findOneBy(['resetToken' => $token]);
-
-        if (!$user || $user->getTokenExpiry() < new \DateTime()) {
-            $this->addFlash('error', 'Token invalide ou expiré.');
-            return $this->redirectToRoute('app_request_reset_password');
-        }
-
-        $form = $this->createFormBuilder()
-            ->add('password', PasswordType::class, [
-                'label' => 'Nouveau mot de passe',
-                'constraints' => [
-                    new Length(['min' => 8, 'minMessage' => 'Votre mot de passe doit contenir au moins 8 caractères.'])
-                ],
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Réinitialiser'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $newPassword = $form->get('password')->getData();
-            $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
-            $user->setPassword($hashedPassword);
-            $user->setResetToken(null);
-            $user->setTokenExpiry(null);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Votre mot de passe a été mis à jour.');
-            return $this->redirectToRoute('app_login');
-        }
-
-        return $this->render('security/reset_password.html.twig', [
-            'form' => $form->createView(),
         ]);
     }
 
