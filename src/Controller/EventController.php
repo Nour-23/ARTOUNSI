@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Participation;
 use App\Form\EventType;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -74,17 +75,28 @@ class EventController extends AbstractController
             'event' => $event,
         ]);
     }
-
     #[Route('/{id}/delete', name: 'event_delete', methods: ['POST'])]
     public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
     {
+        // Check if the CSRF token is valid
         if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
+            // Remove all participations related to this event
+            $participations = $entityManager->getRepository(Participation::class)->findBy(['event' => $event]);
+            
+            foreach ($participations as $participation) {
+                $entityManager->remove($participation);  // Remove the participation
+            }
+    
+            // Now, remove the event
             $entityManager->remove($event);
-            $entityManager->flush();
-
+            $entityManager->flush();  // Commit changes to the database
+    
+            // Add a success flash message
             $this->addFlash('success', 'Événement supprimé avec succès!');
         }
-
+    
+        // Redirect to the event list
         return $this->redirectToRoute('event_index');
     }
+    
 }

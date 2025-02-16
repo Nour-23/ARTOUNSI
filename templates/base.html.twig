@@ -5,27 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Mon Application{% endblock %}</title>
     
-    {# Ajout de Bootstrap (optionnel) #}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-    {# Ajout de styles personnalisés #}
-    <style>
-        body {
-            padding-top: 60px;
-        }
-    </style>
+    {# Bootstrap and template styles #}
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="{{ asset('css/tiny-slider.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 </head>
 <body>
 
-    {# Barre de navigation #}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    {# Start Navbar #}
+    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
         <div class="container">
-            <a class="navbar-brand" href="{{ path('event_index') }}">Mon Application</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand" href="{{ path('event_index') }}">Artounsi<span></span></a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+
+            <div class="collapse navbar-collapse" id="navbarsFurni">
+                <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('event_index') }}">Événements</a>
                     </li>
@@ -36,8 +34,9 @@
             </div>
         </div>
     </nav>
-
-    {# Contenu principal de la page #}
+    {# End Navbar #}
+    
+    {# Main content #}
     <div class="container mt-4">
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">{{ message }}</div>
@@ -49,7 +48,9 @@
         {% block body %}{% endblock %}
     </div>
 
-    {# Ajout de Bootstrap JS (optionnel) #}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {# JavaScript #}
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/tiny-slider.js') }}"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
 </body>
 </html>
