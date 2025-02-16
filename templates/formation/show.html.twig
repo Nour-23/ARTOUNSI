@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Formation{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4 text-primary">Détails de la Formation</h1>
+
+        <div class="card shadow p-4">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th scope="row">ID</th>
+                        <td>{{ formation.id }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Nom</th>
+                        <td>{{ formation.nom }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Description</th>
+                        <td>{{ formation.description }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Durée</th>
+                        <td>{{ formation.duree }} heures</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3 d-flex">
+            <a href="{{ path('app_formation_index') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+
+            <a href="{{ path('app_formation_edit', {'id': formation.id}) }}" class="btn btn-warning me-2">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+
+            {{ include('formation/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

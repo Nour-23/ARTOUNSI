@@ -1,0 +1,55 @@
+{{ form_start(form, {'attr': {'class': 'container mt-4', 'novalidate': 'novalidate'}}) }}
+
+    <div class="mb-3">
+        {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.nom) }}
+    </div>
+
+<div class="mb-3">
+    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+    {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.description, {'attr': {'class': 'text-danger'}}) }}
+</div>
+
+
+    <div class="mb-3">
+        {{ form_label(form.dateDebut, 'Date de début', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.dateDebut) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.duree, 'Durée (jours)', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.duree, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.duree) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lieu) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.formateur, 'Formateur', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.formateur, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.formateur) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.tarif, 'Tarif', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.tarif, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.tarif) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.category, 'Catégorie', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.category) }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    <a href="{{ path('app_formation_index') }}" class="btn btn-secondary">Retour</a>
+
+{{ form_end(form) }}
