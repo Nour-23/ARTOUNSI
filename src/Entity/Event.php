@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
 use App\Repository\EventRepository;
@@ -14,8 +16,8 @@ class Event
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $category_id = null;
+    #[ORM\OneToMany(mappedBy: "event", targetEntity: Participation::class, cascade: ["remove"])]
+    private Collection $participations;    
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -124,4 +126,8 @@ class Event
         $this->updated_at = $updated_at;
         return $this;
     }
+
+
+    
+    
 }
