@@ -4,8 +4,8 @@
 
 {% block body %}
     <h1>Créer un Nouvel Événement</h1>
-    
-    {{ form_start(form) }}
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
         {{ form_widget(form) }}
         <button type="submit">Créer</button>
     {{ form_end(form) }}

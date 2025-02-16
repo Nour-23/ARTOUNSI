@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feedback for Event{% endblock %}
+
+{% block body %}
+    <h1>Feedback for {{ participation.event.name }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.feedback) }}
+        <button class="btn">{{ button_label|default('Submit Feedback') }}</button>
+    {{ form_end(form) }}
+{% endblock %}

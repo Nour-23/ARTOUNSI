@@ -2,34 +2,52 @@
 
 namespace App\Controller;
 
+use App\Entity\Event;
+use App\Entity\Participation;
+use App\Repository\EventRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
-final class ParticipantController extends AbstractController{
+class ParticipantController extends AbstractController
+{
     #[Route('/participant', name: 'app_participant')]
-    public function index(): Response
+    public function index(EventRepository $eventRepository): Response
     {
-        return $this->render('participant/form.html.twig', [
-            'controller_name' => 'ParticipantController',
+        // Get all events for the participant to choose from
+        $events = $eventRepository->findAll();
+
+        return $this->render('event/participate.html.twig', [
+            'events' => $events,
         ]);
     }
 
-    #[Route('/participant/event/new', name: 'participant_event_new')]
-    public function newEvent(Request $request, EntityManagerInterface $em): Response
-    {
-        $event = new Event();
-        $form = $this->createForm(EventType::class, $event);
-        $form->handleRequest($request);
+    #[Route('/participant/event/{id}/participate', name: 'participant_event_participate')]
+public function participate(int $id, EventRepository $eventRepository, EntityManagerInterface $em): Response
+{
+    // Fetch the Event entity from the database
+    $event = $eventRepository->find($id);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($event);
-            $em->flush();
-            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
-        }
-
-        return $this->render('form.html.twig', [
-            'eventForm' => $form->createView(),
-        ]);
+    if (!$event) {
+        // Handle the case where the event is not found
+        $this->addFlash('error', 'Event not found!');
+        return $this->redirectToRoute('app_participant');
     }
+
+    // Create a new participation entry
+    $participation = new Participation();
+    $participation->setEvent($event);
+
+    // Set a default response value (0 for pending)
+    $participation->setResponse(0);
+
+    // Persist the participation in the database
+    $em->persist($participation);
+    $em->flush();
+
+    $this->addFlash('success', 'You have successfully participated in the event!');
+
+    return $this->redirectToRoute('app_participant');
+}
 }

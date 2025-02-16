@@ -1,23 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Participer à l'événement{% endblock %}
+{% block title %}Available Events{% endblock %}
 
 {% block body %}
-    <h1>Participer à l'événement: {{ event.name }}</h1>
+    <div class="container mt-4">
+        <h1>Available Events</h1>
+        
+        {% for event in events %}
+            <div class="event-card">
+                <h3>{{ event.title }}</h3>
+                <p>{{ event.description }}</p>
+                <p><strong>Date:</strong> {{ event.date|date('d-m-Y') }}</p>
 
-    {{ form_start(form) }}
-        <div>
-            {{ form_label(form.response) }}
-            {{ form_widget(form.response) }}
-        </div>
-
-        <div>
-            {{ form_label(form.feedback) }}
-            {{ form_widget(form.feedback) }}
-        </div>
-
-        <div>
-            <button class="btn">Soumettre</button>
-        </div>
-    {{ form_end(form) }}
+                {# Show Participate button without checking login status #}
+                <a href="{{ path('participant_event_participate', {'id': event.id}) }}" class="btn btn-primary">Participate</a>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
+
+
+

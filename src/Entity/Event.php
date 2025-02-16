@@ -2,9 +2,8 @@
 
 namespace App\Entity;
 
-use App\Repository\EventRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
@@ -35,7 +34,6 @@ class Event
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated_at = null;
 
-    // Le constructeur initialise les dates created_at et updated_at
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -55,7 +53,6 @@ class Event
     public function setCategoryId(?int $category_id): static
     {
         $this->category_id = $category_id;
-
         return $this;
     }
 
@@ -67,7 +64,6 @@ class Event
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -79,7 +75,6 @@ class Event
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -91,7 +86,6 @@ class Event
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -103,7 +97,6 @@ class Event
     public function setLocation(string $location): static
     {
         $this->location = $location;
-
         return $this;
     }
 
@@ -115,7 +108,6 @@ class Event
     public function setCreatedAt(\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
-
         return $this;
     }
 
@@ -127,7 +119,6 @@ class Event
     public function setUpdatedAt(\DateTimeInterface $updated_at): static
     {
         $this->updated_at = $updated_at;
-
         return $this;
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
-use App\Form\EventType; // Utilisation de EventType
+use App\Form\EventType;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,19 +22,18 @@ class EventController extends AbstractController
         ]);
     }
 
-    // Route pour la création d'un événement
-    #[Route('/new', name: 'event_new')]
+    #[Route('/new', name: 'event_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $event = new Event();
-        $form = $this->createForm(EventType::class, $event); // Utilisation de EventType
+        $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($event);
             $entityManager->flush();
 
-            // Redirection vers la liste des événements après la création
+            $this->addFlash('success', 'Événement créé avec succès!');
             return $this->redirectToRoute('event_index');
         }
 
@@ -43,31 +42,23 @@ class EventController extends AbstractController
         ]);
     }
 
-   // Affichage d'un événement
-#[Route('/{id}', name: 'event_show', methods: ['GET'])]
-public function show(int $id, EventRepository $eventRepository): Response
-{
-    // Récupérer l'événement avec l'ID
-    $event = $eventRepository->find($id);
+    #[Route('/{id}', name: 'event_show', methods: ['GET'])]
+    public function show(int $id, EventRepository $eventRepository): Response
+    {
+        $event = $eventRepository->find($id);
+        if (!$event) {
+            throw $this->createNotFoundException('L\'événement demandé n\'existe pas.');
+        }
 
-    // Vérifier si l'événement existe
-    if (!$event) {
-        throw $this->createNotFoundException('L\'événement demandé n\'existe pas.');
+        return $this->render('event/show.html.twig', [
+            'event' => $event,
+        ]);
     }
 
-    // Rendu du template avec l'événement
-    return $this->render('event/show.html.twig', [
-        'event' => $event,
-    ]);
-}
-
-
-
-    // Édition d'un événement
     #[Route('/{id}/edit', name: 'event_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Event $event, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(EventType::class, $event); // Utilisation de EventType
+        $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -84,7 +75,6 @@ public function show(int $id, EventRepository $eventRepository): Response
         ]);
     }
 
-    // Suppression d'un événement
     #[Route('/{id}/delete', name: 'event_delete', methods: ['POST'])]
     public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
     {
