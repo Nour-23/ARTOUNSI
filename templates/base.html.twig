@@ -83,6 +83,15 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+        <!-- Link CSS files -->
+    <link rel="stylesheet" href="{{ asset('/public/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('/public/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/public/css/tiny-slider.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+
+    <!-- Include JavaScript files -->
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     </head>
     <body>
         <div class="container">

@@ -13,7 +13,7 @@ class CategoryOffreType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('libelle')
+            ->add('description')
         ;
     }
 

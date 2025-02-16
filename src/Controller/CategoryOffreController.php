@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\CategoryOffre;
 use App\Form\CategoryOffreType;
 use App\Repository\CategoryOffreRepository;
+use App\Repository\OffreRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +16,11 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CategoryOffreController extends AbstractController
 {
     #[Route(name: 'app_category_offre_index', methods: ['GET'])]
-    public function index(CategoryOffreRepository $categoryOffreRepository): Response
-    {
+    public function index(CategoryOffreRepository $categoryOffreRepository, OffreRepository $offreRepository  // 🔹 Injection du repository des offres
+    ): Response {
         return $this->render('category_offre/index.html.twig', [
             'category_offres' => $categoryOffreRepository->findAll(),
+            'offres' => $offreRepository->findAll(),  // 🔹 Transmission des offres au template
         ]);
     }
 

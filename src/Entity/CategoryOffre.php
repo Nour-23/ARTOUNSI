@@ -19,7 +19,7 @@ class CategoryOffre
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $libelle = null;
+    private ?string $description = null;
 
     /**
      * @var Collection<int, Offre>
@@ -33,7 +33,7 @@ class CategoryOffre
     }
     public function __toString(): string
     {
-        return $this->name . ' (' . $this->libelle . ')'; // Exemple d'affichage, ajustez selon vos besoins
+        return $this->name . ' (' . $this->description . ')'; // Exemple d'affichage, ajustez selon vos besoins
     }
 
     public function getId(): ?int
@@ -53,14 +53,14 @@ class CategoryOffre
         return $this;
     }
 
-    public function getLibelle(): ?string
+    public function getdescription(): ?string
     {
-        return $this->libelle;
+        return $this->description;
     }
 
-    public function setLibelle(string $libelle): static
+    public function setdescription(string $description): static
     {
-        $this->libelle = $libelle;
+        $this->description = $description;
 
         return $this;
     }
