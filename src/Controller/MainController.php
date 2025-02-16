@@ -123,5 +123,11 @@ public function restoreOffre(Request $request, $id): Response
     $this->addFlash('message', 'L\'offre a été restaurée.');
     return $this->redirectToRoute('app_main');
 }
+#[Route('/asma', name: 'asma')]
+public function asma(): Response
+{
+    return $this->render('main/backup.html.twig' 
+    );
+}
  
 }
