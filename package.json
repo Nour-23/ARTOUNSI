@@ -1,51 +1,36 @@
 {
-  "name": "material-kit",
-  "version": "3.0.4",
-  "description": "Freebie UI Kit for Bootstrap 5",
-  "main": "index.html",
+  "name": "artounsi2.0",
+  "version": "1.0.0",
+  "main": "webpack.config.js",
   "directories": {
-    "example": "root"
+    "doc": "docs"
+  },
+  "devDependencies": {
+    "@symfony/webpack-encore": "^5.0.1",
+    "css-loader": "^7.1.2",
+    "file-loader": "^6.2.0",
+    "sass": "^1.85.0",
+    "sass-loader": "^16.0.5",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-notifier": "^1.15.0"
   },
   "scripts": {
-    "open-app": "gulp open-app",
-    "start": "npm run open-app",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "gulp-watch"
+    "dev": "encore dev --watch",
+    "build": "encore production"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/creativetimofficial/material-kit.git"
+    "url": "git+https://github.com/Nour-23/ARTOUNSI.git"
   },
-  "keywords": [
-    "material kit 2",
-    "bootstrap 5",
-    "design system",
-    "ui kit",
-    "creative tim",
-    "html kit",
-    "html css kit",
-    "web kit",
-    "freebie",
-    "free bootstrap kit",
-    "css3 kit",
-    "bootstrap design system",
-    "frontend",
-    "responsive bootstrap kit"
-  ],
-  "author": "Creative Tim <hello@creative-tim.com> (https://www.creative-tim.com/)",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/creativetimofficial/material-kit/issues"
+    "url": "https://github.com/Nour-23/ARTOUNSI/issues"
   },
-  "devDependencies": {
-    "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^7.0.1",
-    "gulp-clean": "^0.4.0",
-    "gulp-install": "^1.1.0",
-    "gulp-sass": "^5.1.0",
-    "gulp-sourcemaps": "^2.6.5",
-    "gulp-open": "^3.0.1",
-    "sass": "^1.49.9"
-  },
-  "homepage": "https://creative-tim.com/product/material-kit"
+  "homepage": "https://github.com/Nour-23/ARTOUNSI#readme",
+  "description": ""
 }

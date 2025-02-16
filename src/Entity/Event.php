@@ -22,7 +22,9 @@ class Event
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: 'datetime')]
+    #[Assert\NotBlank(message: 'Date can\'t be empty.')]
+    #[Assert\Type(type: '\DateTimeInterface', message: 'Invalid date format.')]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
@@ -78,15 +80,15 @@ class Event
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
         return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
     }
 
     public function getLocation(): ?string
