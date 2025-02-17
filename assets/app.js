@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import './bootstrap.js';
+=======
+>>>>>>> origin/Collaboration
 /*
  * Welcome to your app's main JavaScript file!
  *

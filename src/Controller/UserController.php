@@ -98,67 +98,68 @@ class UserController extends AbstractController
         ]);
     }
     #[Route('/login', name: 'app_login')]
-public function login(
-    Request $request, 
-    AuthenticationUtils $authenticationUtils, 
-    UserRepository $userRepository, 
-    Security $security
-): Response {
-    // Vérifier si l'utilisateur est déjà connecté
-    $user = $security->getUser(); 
-    if ($user instanceof User) {
-        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
-    }
-   
+    public function login(
+        Request $request, 
+        AuthenticationUtils $authenticationUtils, 
+        UserRepository $userRepository, 
+        Security $security
+    ): Response {
+        // Vérifier si l'utilisateur est déjà connecté
+        $user = $security->getUser(); 
+        if ($user instanceof User) {
+            if (in_array('ROLE_ADMIN', $user->getRoles())) {
+                return $this->redirectToRoute('app_main'); // Redirection si ADMIN
+            }
+            return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+        }
     
-
-    // Création du formulaire de connexion
-    $form = $this->createForm(LoginFormType::class);
-    $form->handleRequest($request);
-
-    // Récupération des erreurs d'authentification
-    $error = $authenticationUtils->getLastAuthenticationError();
-    $lastUsername = $authenticationUtils->getLastUsername();
-
-    // Vérification si le formulaire est soumis et valide
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Récupérer les données du formulaire
+        // Création du formulaire de connexion
+        $form = $this->createForm(LoginFormType::class);
+        $form->handleRequest($request);
     
-        $email = $form->get('email')->getData();
-        $password = $form->get('password')->getData(); // Assurez-vous que votre formulaire a un champ "password"
-
-         // ✅ Vérification si l'email existe en base
+        // Récupération des erreurs d'authentification
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+    
+        // Vérification si le formulaire est soumis et valide
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer les données du formulaire
+            $email = $form->get('email')->getData();
+            $password = $form->get('password')->getData(); // Assurez-vous que votre formulaire a un champ "password"
+    
+            // Vérification si l'email existe en base
             $user = $userRepository->findOneBy(['email' => $email]);
+            if (!$user) {
+                $this->addFlash('error', 'Cet email est introuvable.');
+                return $this->redirectToRoute('app_forgot_password_request');
+            }
+    
+            // Vérifier si l'utilisateur est archivé
             if ($user->isArchived()) {
                 $this->addFlash('error', 'Ce compte est archivé et ne peut plus être utilisé.');
                 return $this->redirectToRoute('app_login');
             }
-          
-        if (!$user) {
-            // Si l'utilisateur n'existe pas, rediriger vers le formulaire de réinitialisation
-            $this->addFlash('error', 'Cet email est introuvable.');
-            return $this->redirectToRoute('app_forgot_password_request');
+    
+            // Vérification du mot de passe
+            if (!password_verify($password, $user->getPassword())) {
+                $this->addFlash('error', 'Mot de passe incorrect.');
+                return $this->redirectToRoute('app_login');
+            }
+    
+            // ✅ Redirection selon le rôle
+            if (in_array('ROLE_ADMIN', $user->getRoles())) {
+                return $this->redirectToRoute('app_main'); // Redirection ADMIN
+            }
+            return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
         }
-
-        // Vérification du mot de passe
-        if (!password_verify($password, $user->getPassword())) {
-            $this->addFlash('error', 'Mot de passe incorrect.');
-            return $this->redirectToRoute('app_login');
-        }
-
-
-        // Redirection vers le profil après une connexion réussie
-        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+    
+        return $this->render('security/login.html.twig', [
+            'form' => $form->createView(),
+            'last_username' => $lastUsername,
+            'error' => $error,
+        ]);
     }
-
-    // Affichage du formulaire avec les erreurs
-    return $this->render('security/login.html.twig', [
-        'form' => $form->createView(),
-        'last_username' => $lastUsername,
-        'error' => $error,
-    ]);
-}
-
+    
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
