@@ -72,7 +72,7 @@ final class ArticleController extends AbstractController
         ]);
     }
     #[Route('/{id}/edit', name: 'app_article_edit', methods: ['GET', 'POST'])]
-public function edit(Request $request, Article $article, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Article $article, EntityManagerInterface $entityManager): Response
 {
     // Crée le formulaire
     $form = $this->createForm(ArticleType::class, $article);
@@ -82,7 +82,6 @@ public function edit(Request $request, Article $article, EntityManagerInterface 
     if ($form->isSubmitted() && $form->isValid()) {
         // Vérifie si une nouvelle image a été uploadée
         $imageFile = $form->get('image')->getData();
-
         // Si une nouvelle image a été uploadée, la traiter
         if ($imageFile) {
             // Traitez ici l'image (par exemple, la déplacer vers un répertoire de votre choix)
@@ -91,12 +90,9 @@ public function edit(Request $request, Article $article, EntityManagerInterface 
                 $this->getParameter('image_directory'),
                 $newFilename
             );
-
             // Assurez-vous de mettre à jour la propriété image avec le nouveau nom de fichier
             $article->setImage($newFilename);
         }
-
-        // Sauvegarde des données
         $entityManager->flush();
 
         // Redirection vers la liste des articles
@@ -111,15 +107,15 @@ public function edit(Request $request, Article $article, EntityManagerInterface 
 }
 
    
-    #[Route('/{id}', name: 'app_article_delete', methods: ['POST'])]
-    public function delete(Request $request, Article $article, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$article->getId(), $request->get('csrf_token'))) {
-            $entityManager->remove($article);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_article_index', [], Response::HTTP_SEE_OTHER);
+#[Route('/{id}', name: 'app_article_delete', methods: ['POST'])]
+public function delete(Request $request, Article $article, EntityManagerInterface $entityManager): Response
+{
+    if ($this->isCsrfTokenValid('delete' . $article->getId(), $request->get('csrf_token'))) {
+        $entityManager->remove($article);
+        $entityManager->flush();
     }
+
+    return $this->redirectToRoute('app_article_index', [], Response::HTTP_SEE_OTHER);
+}
 
 }

@@ -77,7 +77,7 @@ final class CategorieController extends AbstractController
     
             if (!$noneCategory) {
                 $noneCategory = new Categorie();
-                $noneCategory->setNom('None');
+                $noneCategory->setNom('Aucune catégorie');
                 $entityManager->persist($noneCategory);
                 $entityManager->flush();
             }
