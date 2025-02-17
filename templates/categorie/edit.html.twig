@@ -1,23 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Categorie{% endblock %}
+{% block title %}Edit Category{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1 class="text-center my-4">Modifier la Catégorie</h1>
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center text-primary mb-4">
+            <i class="fas fa-edit"></i> Edit Category
+        </h2>
 
-    <!-- Inclure le formulaire -->
-    {{ include('categorie/_form.html.twig', {'button_label': 'Update'}) }}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                {{ include('categorie/_form.html.twig', {'button_label': 'Update'}) }}
+            </div>
+        </div>
 
-    <!-- Bouton retour à la liste avec espacement -->
-    <div class="text-center mt-4">
-        <a href="{{ path('app_categorie_index') }}" class="btn btn-secondary">Retour à la liste</a>
-    </div>
-
-    <!-- Formulaire de suppression -->
-    <div class="text-center mt-4">
-        {{ include('categorie/_delete_form.html.twig') }}
+        <div class="d-flex justify-content-between mt-3">
+            <a href="{{ path('app_categorie_index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+            {{ include('categorie/_delete_form.html.twig') }}
+        </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+    .container {
+        max-width: 650px;
+    }
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+        font-weight: 600;
+    }
+    .btn {
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

@@ -1,13 +1,11 @@
-<?php
+<?php 
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\CategorieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Controller\SluggerInterface;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
 class Categorie
@@ -17,18 +15,19 @@ class Categorie
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nom = null;
+    #[ORM\Column(type: "string", length: 255)]
+    private ?string $type = null;
 
-    /**
-     * @var Collection<int, Article>
-     */
-    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'categorie')]
-    private Collection $articles;
+    #[ORM\Column(type: "string", length: 255)]
+    private ?string $sousCategorie = null;
+
+    // Relation OneToMany avec Reclamation
+    #[ORM\OneToMany(mappedBy: "categorie", targetEntity: Reclamation::class, cascade: ["remove"])]
+    private Collection $reclamations;
 
     public function __construct()
     {
-        $this->articles = new ArrayCollection();
+        $this->reclamations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -36,45 +35,57 @@ class Categorie
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getType(): ?string
     {
-        return $this->nom;
+        return $this->type;
     }
 
-    public function setNom(string $nom): static
+    public function setType(string $type): self
     {
-        $this->nom = $nom;
-
+        $this->type = $type;
         return $this;
     }
 
-    /**
-     * @return Collection<int, Article>
-     */
-    public function getArticles(): Collection
+    public function getSousCategorie(): ?string
     {
-        return $this->articles;
+        return $this->sousCategorie;
     }
 
-    public function addArticle(Article $article): static
+    public function setSousCategorie(string $sousCategorie): self
     {
-        if (!$this->articles->contains($article)) {
-            $this->articles->add($article);
-            $article->setCategorie($this);
+        $this->sousCategorie = $sousCategorie;
+        return $this;
+    }
+
+    // Getter et Setter pour la relation OneToMany avec Reclamation
+    public function getReclamations(): Collection
+    {
+        return $this->reclamations;
+    }
+
+    public function addReclamation(Reclamation $reclamation): self
+    {
+        if (!$this->reclamations->contains($reclamation)) {
+            $this->reclamations->add($reclamation);
+            $reclamation->setCategorie($this);
         }
 
         return $this;
     }
 
-    public function removeArticle(Article $article): static
+    public function removeReclamation(Reclamation $reclamation): self
     {
-        if ($this->articles->removeElement($article)) {
-            // set the owning side to null (unless already changed)
-            if ($article->getCategorie() === $this) {
-                $article->setCategorie(null);
+        if ($this->reclamations->removeElement($reclamation)) {
+            if ($reclamation->getCategorie() === $this) {
+                $reclamation->setCategorie(null);
             }
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->type ?? 'Undefined';
     }
 }

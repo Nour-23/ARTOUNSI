@@ -1,36 +1,58 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Catégorie{% endblock %}
+{% block title %}Categorie Details{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1 class="text-center my-4">Détails de la Catégorie</h1>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Categorie Details</h2>
 
-    <!-- Card pour afficher les informations de la catégorie -->
-    <div class="card shadow-sm">
+    <div class="card shadow-lg p-4">
         <div class="card-body">
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <th>Id</th>
+                        <th class="bg-light">ID</th>
                         <td>{{ categorie.id }}</td>
                     </tr>
                     <tr>
-                        <th>Nom</th>
-                        <td>{{ categorie.nom }}</td>
+                        <th class="bg-light">Type</th>
+                        <td><span class="badge bg-primary">{{ categorie.type }}</span></td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">Sous Categorie</th>
+                        <td>{{ categorie.sousCategorie }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Boutons pour actions avec espacement et taille uniforme -->
-    <div class="d-flex justify-content-between mt-4">
-        <a href="{{ path('app_categorie_index') }}" class="btn btn-secondary btn-lg">Retour à la liste</a>
-        <div>
-            <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}" class="btn btn-warning btn-lg mr-2">Modifier</a>
-            {{ include('categorie/_delete_form.html.twig') }}
-        </div>
+    <div class="d-flex justify-content-center gap-3 mt-3">
+        <a href="{{ path('app_categorie_index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+        <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+        {{ include('categorie/_delete_form.html.twig') }}
     </div>
 </div>
+
+<style>
+    .container {
+        max-width: 700px;
+    }
+    .card {
+        border-radius: 12px;
+    }
+    .table th {
+        width: 30%;
+        text-align: left;
+    }
+    .badge {
+        font-size: 14px;
+        padding: 8px;
+        border-radius: 8px;
+    }
+</style>
 {% endblock %}
