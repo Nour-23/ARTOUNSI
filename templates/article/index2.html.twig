@@ -1,4 +1,4 @@
-{% extends 'base2.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Articles{% endblock %}
 
@@ -7,11 +7,9 @@
     <h1 class="text-center my-4">Liste des articles</h1>
  <!-- Bouton pour consulter les catégories -->
     <div class="text-center mb-4">
-        <a href="{{ path('app_categorie_index') }}" class="btn btn-info">Consulter les catégories</a>
+        <a href="{{ path('app_categorie_indexfront') }}" class="btn btn-info">Consulter les catégories</a>
     </div>
-    <div class="text-center mt-4">
-        <a href="{{ path('app_article_new') }}" class="btn btn-success">Créer un nouvel article</a>
-    </div>
+    
     <div class="row">
         {% for article in articles %}
             <div class="col-12 col-md-6 col-lg-4 mb-4">
@@ -29,8 +27,7 @@
                         <p><strong>Prix :</strong> {{ article.prix }} TND</p>
                         <p><strong>Catégorie :</strong> {{ article.categorie.nom }}</p>
                         <div class="d-flex justify-content-between">
-                            <a href="{{ path('app_article_show', {'id': article.id}) }}" class="btn btn-sm btn-primary">Détails</a>
-                            <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                            <a href="{{ path('app_article_showfront', {'id': article.id}) }}" class="btn btn-sm btn-primary">Détails</a>
                         </div>
                     </div>
                 </div>

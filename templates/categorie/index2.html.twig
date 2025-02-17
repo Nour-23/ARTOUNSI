@@ -1,4 +1,4 @@
-{% extends 'base2.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Catégories{% endblock %}
 
@@ -19,8 +19,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ categorie.nom }}</h5>
                         <div class="d-flex justify-content-between">
-                            <a href="{{ path('app_categorie_show', {'id': categorie.id}) }}" class="btn btn-sm btn-primary">Voir</a>
-                            <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                            <a href="{{ path('app_categorie_showfront', {'id': categorie.id}) }}" class="btn btn-sm btn-primary">Voir</a>
                         </div>
                     </div>
                 </div>

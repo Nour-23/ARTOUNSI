@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+
 #[Route('/article')]
 final class ArticleController extends AbstractController
 {
@@ -70,52 +71,46 @@ final class ArticleController extends AbstractController
             'article' => $article,
         ]);
     }
-
     #[Route('/{id}/edit', name: 'app_article_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Article $article, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ArticleType::class, $article);
-        $form->handleRequest($request);
-    
-        // Conserver l'ancienne image avant de tenter d'en télécharger une nouvelle
-        $currentImage = $article->getImage();
-    
-        if ($form->isSubmitted() && $form->isValid()) {
-            $imageFile = $form->get('image')->getData();
-    
-            if ($imageFile) {
-                // Générer un nom unique pour l'image
-                $newFilename = uniqid().'.'.$imageFile->guessExtension();
-    
-                // Déplacer l'image vers le dossier public/uploads/images
-                $imageFile->move($this->getParameter('uploads/images/'), $newFilename);
-    
-                // Supprimer l'ancienne image si elle existe
-                if ($currentImage) {
-                    $oldImagePath = $this->getParameter('uploads/images/').'/'.$currentImage;
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
-                }
-    
-                // Mettre à jour le nom de l'image dans l'article
-                $article->setImage($newFilename);
-            } else {
-                // Si aucune nouvelle image n'est téléchargée, on garde l'ancienne image
-                $article->setImage($currentImage);
-            }
-    
-            $entityManager->flush();
-    
-            return $this->redirectToRoute('app_article_index', [], Response::HTTP_SEE_OTHER);
+public function edit(Request $request, Article $article, EntityManagerInterface $entityManager): Response
+{
+    // Crée le formulaire
+    $form = $this->createForm(ArticleType::class, $article);
+    $form->handleRequest($request);
+
+    // Si le formulaire est soumis et valide
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Vérifie si une nouvelle image a été uploadée
+        $imageFile = $form->get('image')->getData();
+
+        // Si une nouvelle image a été uploadée, la traiter
+        if ($imageFile) {
+            // Traitez ici l'image (par exemple, la déplacer vers un répertoire de votre choix)
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+            $imageFile->move(
+                $this->getParameter('image_directory'),
+                $newFilename
+            );
+
+            // Assurez-vous de mettre à jour la propriété image avec le nouveau nom de fichier
+            $article->setImage($newFilename);
         }
-    
-        return $this->render('article/edit.html.twig', [
-            'article' => $article,
-            'form' => $form,
-        ]);
+
+        // Sauvegarde des données
+        $entityManager->flush();
+
+        // Redirection vers la liste des articles
+        return $this->redirectToRoute('app_article_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    // Si le formulaire n'est pas soumis ou valide, on affiche le formulaire
+    return $this->render('article/edit.html.twig', [
+        'article' => $article,
+        'form' => $form,
+    ]);
+}
+
+   
     #[Route('/{id}', name: 'app_article_delete', methods: ['POST'])]
     public function delete(Request $request, Article $article, EntityManagerInterface $entityManager): Response
     {
@@ -126,4 +121,5 @@ final class ArticleController extends AbstractController
 
         return $this->redirectToRoute('app_article_index', [], Response::HTTP_SEE_OTHER);
     }
+
 }
