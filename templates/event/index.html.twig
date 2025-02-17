@@ -25,8 +25,8 @@
                         <td>{{ event.date ? event.date|date('Y-m-d H:i:s') : 'No Date' }}</td>
                         <td>{{ event.location }}</td>
                         <td>
-                            <a href="{{ path('event_show', {'id': event.id}) }}" class="btn btn-info btn-sm">Show</a>
-                            <a href="{{ path('event_edit', {'id': event.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ path('event_show', {'id': event.id}) }}" class="btn btn-primary">Show</a>
+                            <a href="{{ path('event_edit', {'id': event.id}) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>
                 {% else %}
@@ -38,7 +38,7 @@
         </table>
     </div>
 
-    <div class="container text-center mt-4">
-        <a href="{{ path('event_new') }}" class="btn btn-secondary me-2">Create New Event</a>
+    <div class="container text-center mt-4 ">
+        <a href="{{ path('event_new') }}" class="btn btn-secondary me-2 text-white">Create New Event</a>
     </div>
 {% endblock %}

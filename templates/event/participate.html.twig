@@ -25,9 +25,11 @@
 {# End Hero Section #}
 
     <div class="container mt-4">
+
         <h1 class="text-center mb-4">Événements Disponibles</h1>
         {% for message in app.flashes('success') %}
         <div class="alert alert-success">{{ message }}</div>
+
     {% endfor %}
         <div class="row">
             {% for event in events %}
@@ -38,7 +40,7 @@
                     <p><strong>Date:</strong> {{ event.date|date('d-m-Y') }}</p>
 
                     {# Show Participate button without checking login status #}
-                    <a href="{{ path('participant_event_participate', {'id': event.id}) }}" class="btn btn-secondary me-2">Participate</a>
+                    <a href="{{ path('participant_event_participate', {'id': event.id}) }}" class="btn btn-secondary me-2 text-white">Participate</a>
                 </div>
             </div>
             {% else %}
