@@ -96,11 +96,12 @@ class FormationType extends AbstractType
             ->add('category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'nom',
-                'required' => false, // Permet que la catégorie soit optionnelle
-                'placeholder' => 'Aucune catégorie',
-                'attr' => ['class' => 'form-control'],
+                'label' => 'Choisir une catégorie',
+                'placeholder' => 'Sélectionner une catégorie',
+                'expanded' => false, // Dropdown select
+                'multiple' => false, // Une seule catégorie à la fois
             ]);
-    }
+            }
 
     public function configureOptions(OptionsResolver $resolver): void
     {

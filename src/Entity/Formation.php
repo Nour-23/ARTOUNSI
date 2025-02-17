@@ -34,8 +34,8 @@ class Formation
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $tarif = null;
 
-    #[ORM\ManyToOne(targetEntity: Category::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'formations')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
     public function getId(): ?int

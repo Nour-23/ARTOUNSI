@@ -24,7 +24,7 @@ class Category
     /**
      * @var Collection<int, Formation>
      */
-    #[ORM\OneToMany(targetEntity: Formation::class, mappedBy: 'Category')]
+    #[ORM\OneToMany(targetEntity: Formation::class, mappedBy: 'category', cascade: ['persist', 'remove'])]
     private Collection $formations;
 
     public function __construct()
@@ -45,7 +45,6 @@ class Category
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -57,7 +56,6 @@ class Category
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -75,7 +73,6 @@ class Category
             $this->formations->add($formation);
             $formation->setCategory($this);
         }
-
         return $this;
     }
 
@@ -87,7 +84,11 @@ class Category
                 $formation->setCategory(null);
             }
         }
-
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
     }
 }

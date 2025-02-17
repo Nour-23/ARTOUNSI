@@ -30,10 +30,17 @@ final class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion manuelle des formations
+            $selectedFormations = $form->get('formations')->getData();
+            foreach ($selectedFormations as $formation) {
+                $category->addFormation($formation);
+            }
+
             $entityManager->persist($category);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Catégorie créée avec succès.');
+            return $this->redirectToRoute('app_category_index');
         }
 
         return $this->render('category/new.html.twig', [
@@ -57,9 +64,18 @@ final class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Mise à jour des formations associées
+            $selectedFormations = $form->get('formations')->getData();
+            foreach ($selectedFormations as $formation) {
+                if (!$category->getFormations()->contains($formation)) {
+                    $category->addFormation($formation);
+                }
+            }
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Catégorie mise à jour avec succès.');
+            return $this->redirectToRoute('app_category_index');
         }
 
         return $this->render('category/edit.html.twig', [
@@ -68,14 +84,17 @@ final class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_category_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_category_delete', methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
             $entityManager->remove($category);
             $entityManager->flush();
+            $this->addFlash('success', 'Catégorie supprimée avec succès.');
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide, suppression annulée.');
         }
 
-        return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_category_index');
     }
 }
