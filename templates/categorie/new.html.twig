@@ -3,9 +3,15 @@
 {% block title %}New Categorie{% endblock %}
 
 {% block body %}
-    <h1>Create new Categorie</h1>
+<div class="container">
+    <h1 class="text-center my-4">Créer une nouvelle Catégorie</h1>
 
+    <!-- Inclure le formulaire -->
     {{ include('categorie/_form.html.twig') }}
 
-    <a href="{{ path('app_categorie_index') }}">back to list</a>
+    <!-- Bouton retour avec espacement -->
+    <div class="text-center mt-4">
+        <a href="{{ path('app_categorie_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>
 {% endblock %}

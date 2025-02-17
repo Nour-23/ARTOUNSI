@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Categorie;
-use App\Entity\Article;
-
 use App\Form\CategorieType;
 use App\Repository\CategorieRepository;
 use Doctrine\ORM\EntityManagerInterface;

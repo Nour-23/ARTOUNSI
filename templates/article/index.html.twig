@@ -1,55 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Article index{% endblock %}
+{% block title %}Articles{% endblock %}
 
 {% block body %}
-    <h1>Article index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                
-                <th>Nom</th>
-                <th>Description</th>
-                <th>Prix</th>
-                <th>Nbrearticle</th>
-                <th>Categorie</th>
-
-                <th>Image</th>
-                <th>Publiactiondate</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+<div class="container">
+    <h1 class="text-center my-4">Liste des articles</h1>
+ <!-- Bouton pour consulter les catégories -->
+    <div class="text-center mb-4">
+        <a href="{{ path('app_categorie_index') }}" class="btn btn-info">Consulter les catégories</a>
+    </div>
+    <div class="text-center mt-4">
+        <a href="{{ path('app_article_new') }}" class="btn btn-success">Créer un nouvel article</a>
+    </div>
+    <div class="row">
         {% for article in articles %}
-            <tr>
-                
-                <td>{{ article.nom }}</td>
-                <td>{{ article.description }}</td>
-                <td>{{ article.prix }}</td>
-                <td>{{ article.nbrearticle }}</td>
-                <td>{{ article.categorie.nom }}</td>
-
-                    <td>
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-img-top text-center p-3">
                         {% if article.image %}
-                            <img src="{{ asset('uploads/images/' ~ article.image) }}" alt="{{ article.nom }}" width="100">
+                            <img src="{{ asset('uploads/images/' ~ article.image) }}" alt="{{ article.nom }}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
                         {% else %}
-                            No image
+                            <img src="{{ asset('images/default-image.png') }}" alt="Image par défaut" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
                         {% endif %}
-                    </td>
-                <td>{{ article.publiactiondate ? article.publiactiondate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_article_show', {'id': article.id}) }}">show</a>
-                    <a href="{{ path('app_article_edit', {'id': article.id}) }}">edit</a>
-                </td>
-            </tr>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ article.nom }}</h5>
+                        <p class="card-text text-truncate">{{ article.description }}</p>
+                        <p><strong>Prix :</strong> {{ article.prix }} TND</p>
+                        <p><strong>Catégorie :</strong> {{ article.categorie.nom }}</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_article_show', {'id': article.id}) }}" class="btn btn-sm btn-primary">Détails</a>
+                            <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% else %}
-            <tr>
-                <td colspan="8">no records found</td>
-            </tr>
+            <div class="col-12 text-center">
+                <p class="alert alert-warning">Pas d'articles disponibles !</p>
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 
-    <a href="{{ path('app_article_new') }}">Create new</a>
+    
+</div>
 {% endblock %}

@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Form\ArticleType;
-
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +25,7 @@ final class ArticleController extends AbstractController
     }
 
     #[Route('/new', name: 'app_article_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager , SluggerInterface $slugger): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $article = new Article();
         $form = $this->createForm(ArticleType::class, $article);
@@ -35,22 +34,22 @@ final class ArticleController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
 
-        if ($imageFile) {
-            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
-            try {
-                $imageFile->move(
-                    $this->getParameter('uploads_directory'), // Directory where images are stored
-                    $newFilename
-                );
-            } catch (FileException $e) {
-                // Handle error if file upload fails
+                try {
+                    $imageFile->move(
+                        $this->getParameter('uploads_directory'), // Directory where images are stored
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle error if file upload fails
+                }
+
+                $article->setImage($newFilename);
             }
-
-            $article->setImage($newFilename);
-        }
 
             $entityManager->persist($article);
             $entityManager->flush();
@@ -77,13 +76,40 @@ final class ArticleController extends AbstractController
     {
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
-
+    
+        // Conserver l'ancienne image avant de tenter d'en télécharger une nouvelle
+        $currentImage = $article->getImage();
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+    
+            if ($imageFile) {
+                // Générer un nom unique pour l'image
+                $newFilename = uniqid().'.'.$imageFile->guessExtension();
+    
+                // Déplacer l'image vers le dossier public/uploads/images
+                $imageFile->move($this->getParameter('uploads/images/'), $newFilename);
+    
+                // Supprimer l'ancienne image si elle existe
+                if ($currentImage) {
+                    $oldImagePath = $this->getParameter('uploads/images/').'/'.$currentImage;
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+    
+                // Mettre à jour le nom de l'image dans l'article
+                $article->setImage($newFilename);
+            } else {
+                // Si aucune nouvelle image n'est téléchargée, on garde l'ancienne image
+                $article->setImage($currentImage);
+            }
+    
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_article_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('article/edit.html.twig', [
             'article' => $article,
             'form' => $form,
@@ -93,7 +119,7 @@ final class ArticleController extends AbstractController
     #[Route('/{id}', name: 'app_article_delete', methods: ['POST'])]
     public function delete(Request $request, Article $article, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$article->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$article->getId(), $request->get('csrf_token'))) {
             $entityManager->remove($article);
             $entityManager->flush();
         }
