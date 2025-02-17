@@ -42,7 +42,6 @@ class Article
     private ?string $image = null;
 
     #[ORM\Column(type : "datetime_immutable")]
-    #[Assert\NotBlank]
     #[Assert\LessThan("today +1 day", message: "La date ne peut pas être future.")]
     private ?\DateTimeImmutable $publiactiondate = null;
 

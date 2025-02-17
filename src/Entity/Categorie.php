@@ -18,6 +18,8 @@ class Categorie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de la catégorie ne doit pas etre vide.")]
+
     private ?string $nom = null;
 
     /**
