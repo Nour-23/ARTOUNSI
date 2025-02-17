@@ -17,7 +17,9 @@ class Event
     private ?int $id = null;
 
     #[ORM\OneToMany(mappedBy: "event", targetEntity: Participation::class, cascade: ["remove"])]
-    private Collection $participations;    
+    private Collection $participations;
+    
+   
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -28,6 +30,7 @@ class Event
     #[ORM\Column(type: 'datetime')]
     #[Assert\NotBlank(message: 'Date can\'t be empty.')]
     #[Assert\Type(type: '\DateTimeInterface', message: 'Invalid date format.')]
+    #[Assert\Callback(callback: 'validateDate')]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]

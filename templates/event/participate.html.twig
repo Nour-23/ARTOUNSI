@@ -11,7 +11,7 @@
             <div class="col-lg-5">
                 <div class="intro-excerpt">
                     <h1>Bienvenue à l'Espace des Événements</h1>
-                    <p class="mb-4">Découvrez et participez à nos événements passionnants.</p>
+                    <p class="mb-4">Explorez un monde d'opportunités et de découvertes en participant à nos événements captivants, conçus pour vous offrir des expériences inoubliables </p>
                 </div>
             </div>
             <div class="col-lg-7">
@@ -25,8 +25,10 @@
 {# End Hero Section #}
 
     <div class="container mt-4">
-        <h1 class="text-center mb-4">Available Events</h1>
-        
+        <h1 class="text-center mb-4">Événements Disponibles</h1>
+        {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
         <div class="row">
             {% for event in events %}
             <div class="col-12 col-md-6 col-lg-4 mb-4">

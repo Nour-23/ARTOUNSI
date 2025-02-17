@@ -7,6 +7,6 @@
 
     {{ form_start(form) }}
         {{ form_row(form.feedback) }}
-        <button class="btn">{{ button_label|default('Submit Feedback') }}</button>
+        {{ form_row(form.submit) }}
     {{ form_end(form) }}
 {% endblock %}

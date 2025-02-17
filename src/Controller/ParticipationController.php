@@ -1,11 +1,11 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\Participation;
 use App\Entity\Event;
-use App\Form\ParticipationType;
-use App\Repository\EventRepository;
+use App\Entity\Participation;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\EventRepository;
+use App\Repository\ParticipationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,35 +14,54 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/participation')]
 class ParticipationController extends AbstractController
 {
-    // Liste des événements avec la possibilité de participer
-    #[Route('/', name: 'participation_list', methods: ['GET', 'POST'])]
-    public function list(Request $request, EventRepository $eventRepository, EntityManagerInterface $entityManager): Response
+    // Liste des événements et leurs participants
+    #[Route('/', name: 'participation_list', methods: ['GET'])]
+    public function list(EventRepository $eventRepository, ParticipationRepository $participationRepository): Response
     {
         $events = $eventRepository->findAll(); // Récupérer tous les événements
-        $participations = [];
+        $eventParticipants = [];
 
         foreach ($events as $event) {
-            $participation = new Participation();
-            $participation->setEvent($event);
+            // Récupérer les participations liées à cet événement
+            $participants = $participationRepository->findBy(['event' => $event]);
 
-            // Créer un formulaire pour chaque événement
-            $form = $this->createForm(ParticipationType::class, $participation);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $entityManager->persist($participation);
-                $entityManager->flush();
-
-                // Redirection ou message de succès
-                $this->addFlash('success', 'Your participation has been saved!');
-            }
-
-            $participations[$event->getId()] = $form->createView();
+            // Stocker les participants pour cet événement
+            $eventParticipants[$event->getId()] = $participants;
         }
 
-        return $this->render('participation/list.html.twig', [
+        return $this->render('event/participation.html.twig', [
             'events' => $events,
-            'participations' => $participations,
+            'eventParticipants' => $eventParticipants,
+        ]);
+    }
+
+    #[Route('/{id}/feedback', name: 'participation_feedback', methods: ['GET', 'POST'])]
+    public function feedback(Request $request, Participation $participation, EntityManagerInterface $entityManager): Response
+    {
+        // Create a form just for feedback
+        $form = $this->createFormBuilder($participation)
+            ->add('feedback', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+                'required' => true,
+                'label' => 'Provide your feedback',
+            ])
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+                'label' => 'Submit Feedback'
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($participation);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Your feedback has been submitted!');
+            return $this->redirectToRoute('participation_list'); // Redirect to list after submitting
+        }
+
+        return $this->render('event/feedback.html.twig', [
+            'form' => $form->createView(),
+            'participation' => $participation,
         ]);
     }
 }
