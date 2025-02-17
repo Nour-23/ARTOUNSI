@@ -26,7 +26,7 @@ final class MainController extends AbstractController
         $categories = $em->getRepository(CategoryOffre::class)->findAll();
         
         // ✅ Filtrer pour récupérer uniquement les offres actives
-        $offresActives = $offreRepo->findBy(['status' => 'active']);
+        $offresActives = $offreRepo->findAll();
     
         return $this->render('main/index.html.twig', [
             'offres' => $offresActives,  // ✅ Affiche uniquement les offres actives
@@ -130,16 +130,12 @@ public function asma(): Response
     );
 }
 
-#[Route('/front', name: 'asma')]
-public function front(OffreRepository $offreRepo, EntityManagerInterface $em): Response
-{
-    $categories = $em->getRepository(CategoryOffre::class)->findAll();
-    $offresActives = $offreRepo->findBy(['status' => 'active']);
 
-    return $this->render('main/front.html.twig', [
-        'offres' => $offresActives,  
-        'category_offres' => $categories
-    ]);
+#[Route('/front', name: 'asma')]
+public function front(): Response
+{
+    return $this->render('main/front.html.twig');
 }
+
  
 }

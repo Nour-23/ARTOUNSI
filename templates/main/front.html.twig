@@ -6,63 +6,39 @@
     <div class="container mt-5">
         <div class="card shadow-lg border-0 rounded-4 p-4" style="background-color: white;">
             <h2 class="text-center mb-4 text-dark">📋 Liste des Offres</h2>
-
-           
-
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered text-center">
-                    <thead class="bg-light">
-                        <tr class="text-dark">
-                            <th scope="col" class="py-3">ID</th>
-                            <th scope="col" class="py-3">Nom</th>
-                            <th scope="col" class="py-3">category</th>
-                            <th scope="col" class="py-3">Statut</th>
-                            <th scope="col" class="py-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for offre in offres %}
-                            <tr class="align-middle">
-                                <td>{{ offre.id }}</td>
-                                <td>{{ offre.title }}</td>
-                                <td>{{ offre.category.name }}</td>
-
-                                <td>
+            
+            <div class="row">
+                {% for offre in offres %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm border-0 rounded-3">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">{{ offre.title }}</h5>
+                                <p class="card-text"><strong>Catégorie :</strong> {{ offre.category.name }}</p>
+                                <p class="card-text">
+                                    <strong>Statut :</strong> 
                                     {% if offre.status == 'archivé' %}
                                         <span class="badge bg-secondary">Archivé</span>
                                     {% else %}
                                         <span class="badge bg-success">Actif</span>
                                     {% endif %}
-                                </td>
-                                <td class="d-flex justify-content-center gap-2">
-                                    <a href="{{ path('app_offre_show', {'id': offre.id}) }}" 
-                                       class="btn btn-outline-primary btn-sm px-3">
-                                        👁️ Voir
-                                    </a>
-                                   
-                                    
-                                  
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
-                                    <em>Aucune offre trouvée.</em>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </p>
+                                <a href="{{ path('app_offre_show', {'id': offre.id}) }}" class="btn btn-outline-primary btn-sm">👁️ Voir</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12 text-center text-muted py-4">
+                        <em>Aucune offre trouvée.</em>
+                    </div>
+                {% endfor %}
             </div>
 
             <!-- Bouton pour ajouter une nouvelle offre -->
             <div class="text-center mt-4">
-              <a href="{{ path('create_offre') }}" class="btn btn-primary shadow-sm px-5 py-2">
+                <a href="{{ path('create_offre') }}" class="btn btn-primary shadow-sm px-5 py-2">
                     ➕ Ajouter une Offre
                 </a>
             </div>
         </div>
     </div>
 {% endblock %}
-
-
