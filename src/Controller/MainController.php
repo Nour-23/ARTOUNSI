@@ -126,8 +126,20 @@ public function restoreOffre(Request $request, $id): Response
 #[Route('/asma', name: 'asma')]
 public function asma(): Response
 {
-    return $this->render('main/backup.html.twig' 
+    return $this->render('main/asma.html.twig' 
     );
+}
+
+#[Route('/front', name: 'asma')]
+public function front(OffreRepository $offreRepo, EntityManagerInterface $em): Response
+{
+    $categories = $em->getRepository(CategoryOffre::class)->findAll();
+    $offresActives = $offreRepo->findBy(['status' => 'active']);
+
+    return $this->render('main/front.html.twig', [
+        'offres' => $offresActives,  
+        'category_offres' => $categories
+    ]);
 }
  
 }

@@ -27,17 +27,29 @@ class Offre
 
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Status cannot be blank.')]
-    private ?string $status = 'active';
+#[Assert\NotBlank(message: 'Le statut ne peut pas être vide.')]
+#[Assert\Choice(
+    choices: ['active', 'inactive', 'archivé'],
+    message: "Le statut doit être 'active', 'inactive' ou 'archivé'."
+)]
+private ?string $status = 'active';
 
-    #[ORM\ManyToOne(inversedBy: 'offres')]
-#[ORM\JoinColumn(nullable: false)]
-#[Assert\NotNull(message: 'The category cannot be null.')]
-private ?CategoryOffre $category = null;
-
+    #[ORM\ManyToOne(inversedBy: 'offres', cascade: ['remove'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?CategoryOffre $category = null;
+    
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 10,
+        max: 1000,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
+    
+    
 
     public function __construct()
 {
@@ -98,6 +110,9 @@ private ?CategoryOffre $category = null;
 
         return $this;
     }
+
+   
+
 
    
 }
