@@ -4,8 +4,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "symfony/web-profiler-bundle": "^6.0",
-
         "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
@@ -52,6 +50,7 @@
         "symfony/ux-turbo": "^2.22",
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
+        "symfony/web-profiler-bundle": "^6.0",
         "symfony/yaml": "6.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"

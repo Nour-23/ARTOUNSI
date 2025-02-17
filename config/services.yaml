@@ -1,25 +1,30 @@
-parameters:
-    profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile_pictures'
-    mailer_dsn: '%env(MAILER_DSN)%'
-services:
-    Symfony\Component\Mailer\Transport\TransportInterface:
-        factory: 'Symfony\Component\Mailer\Transport\TransportFactoryInterface::fromDsn'
-        arguments:
-            - '%mailer_dsn%'
-    
-    Symfony\Component\Mailer\Mailer:
-        arguments:
-            $transport: '@Symfony\Component\Mailer\Transport\TransportInterface'
-    _defaults:
-        autowire: true
-        autoconfigure: true
+# config/services.yaml
 
+parameters:
+    google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+    images_directory: '%kernel.project_dir%/public/uploads/images'
+    images_directory_salle: '%kernel.project_dir%/public/uploads/salle'
+    images_directory_activite: '%kernel.project_dir%/public/uploads/activite'
+    images_directory_product: '%kernel.project_dir%/public/uploads/product'
+    images_directory_evenement: '%kernel.project_dir%/public/uploads/evenement'
+
+services:
+    # Configuration par défaut pour les services
+    _defaults:
+        autowire: true      # Injection automatique des dépendances
+        autoconfigure: true # Enregistrement automatique des services (commandes, événements, etc.)
+
+    # Enregistrement des contrôleurs
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # Makes classes in src/ available to be used as services
-    # This creates a service per class whose id is the fully-qualified class name
+    # Enregistrement du service de gestion des événements de déconnexion
+    App\Controller\LogoutEventSubscriberController:
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
+    # Rendre les classes de src/ disponibles en tant que services
     App\:
         resource: '../src/'
         exclude:
@@ -27,20 +32,12 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # ✅ Register AbstractOAuthAuthenticator (ensure it's correctly injected)
-    App\Security\AbstractOAuthAuthenticator:
-        abstract: true
-        arguments:
-            $clientRegistry: '@KnpU\OAuth2ClientBundle\Client\ClientRegistry'
-            $router: '@router'
-            $repository: '@App\Repository\UserRepository'
-
-    # ✅ Register GoogleAuthenticator
+    # Enregistrement du GoogleAuthenticator
     App\Security\GoogleAuthenticator:
-        parent: App\Security\AbstractOAuthAuthenticator
-
-# config/services.yaml
-    App\Service\FileUploader:
         arguments:
-            $targetDirectory: '%kernel.project_dir%/public/uploads/photos'
+            $client: '@knpu.oauth2.client.google'
+            $router: '@router'
 
+    # Enregistrement du UserRepository
+    App\Repository\UserRepository:
+        autowire: true
