@@ -236,10 +236,14 @@ private ?string $photo = null;
     }
 
     public function setRoles(array $roles): static
-    {
-        $this->roles = array_intersect($roles, ["ROLE_CLIENT", "ROLE_ADMIN"]);
-        return $this;
-    }
+{
+    // Vérifie que les rôles donnés sont bien parmi ceux autorisés
+    $allowedRoles = ["ROLE_ADMIN", "ROLE_CLIENT"];
+    $this->roles = array_values(array_intersect($roles, $allowedRoles));
+
+    return $this;
+}
+
 
     public function getRole(): ?string
     {

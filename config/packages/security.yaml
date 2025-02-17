@@ -10,8 +10,9 @@ security:
 
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/ 
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
         login:
             pattern: ^/login
             security: false
@@ -19,8 +20,6 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            
-            # Define your custom authenticator as the entry point
             entry_point: App\Security\UserAuthAuthenticator
 
             form_login:
@@ -29,25 +28,20 @@ security:
                 username_parameter: _email
                 password_parameter: _password
                 enable_csrf: true
-                default_target_path: /profile/principale/{id}  # Redirige vers la page souhaitée après la connexion
-                always_use_default_target_path: false  # 🔹 Force la redirection après login
-
+                default_target_path: /profile/principale  # 🔹 Enlève {id} (gère la redirection dans ton contrôleur)
+                always_use_default_target_path: false
 
             logout:
-                 path: /logout
-                 target: /login  # Ensure this route exists
-           # custom_authenticator: App\Security\UserAuthAuthenticator
+                path: /logout
+                target: /login
+
+            custom_authenticator: App\Security\UserAuthAuthenticator
 
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
                 path: /
-                # Uncomment the next line to always enable "remember me" by default
-                # always_remember_me: true
 
     access_control:
-        # Protect routes
         - { path: ^/admin, roles: ROLE_ADMIN }
-
-monolog:
-    channels: [security]
+        - { path: ^/login, roles: PUBLIC_ACCESS }

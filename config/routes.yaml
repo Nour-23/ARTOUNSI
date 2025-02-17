@@ -4,12 +4,12 @@ controllers:
         namespace: App\Controller
     type: attribute
 
-google_login:
-    path: /connect/google
-    controller: App\Controller\UserController::connectGoogle
+#google_login:
+    #path: /connect/google
+   # controller: App\Controller\UserController::connectGoogle
 
-connect_google_check:
-    path: /connect/google/check
+#connect_google_check:
+#    path: /connect/google/check
 
 app_login:
     path: /login
@@ -20,3 +20,6 @@ app_profile_principale:
     controller: App\Controller\UserController::profilePrincipale
     requirements:
         id: \d+  # Ensure 'id' is a number
+admin_dashboard:
+    path: /admin
+    controller: App\Controller\Admin\DashboardController::inde
