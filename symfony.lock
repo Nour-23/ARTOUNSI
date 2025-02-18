@@ -98,7 +98,7 @@
             "./bin/console"
         ]
     },
-<<<<<<< HEAD
+
     "symfony/debug-bundle": {
         "version": "6.4",
         "recipe": {
@@ -111,8 +111,7 @@
             "./config/packages/debug.yaml"
         ]
     },
-=======
->>>>>>> origin/Collaboration
+
     "symfony/flex": {
         "version": "2.4",
         "recipe": {
@@ -145,7 +144,7 @@
             "./src/Kernel.php"
         ]
     },
-<<<<<<< HEAD
+
     "symfony/mailer": {
         "version": "6.4",
         "recipe": {
@@ -158,8 +157,7 @@
             "./config/packages/mailer.yaml"
         ]
     },
-=======
->>>>>>> origin/Collaboration
+
     "symfony/maker-bundle": {
         "version": "1.62",
         "recipe": {
@@ -169,7 +167,7 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
-<<<<<<< HEAD
+
     "symfony/messenger": {
         "version": "6.4",
         "recipe": {
@@ -221,8 +219,7 @@
             "./tests/bootstrap.php"
         ]
     },
-=======
->>>>>>> origin/Collaboration
+
     "symfony/routing": {
         "version": "6.4",
         "recipe": {
@@ -236,7 +233,7 @@
             "./config/routes.yaml"
         ]
     },
-<<<<<<< HEAD
+
     "symfony/security-bundle": {
         "version": "6.4",
         "recipe": {
@@ -277,8 +274,7 @@
             "./translations/.gitignore"
         ]
     },
-=======
->>>>>>> origin/Collaboration
+
     "symfony/twig-bundle": {
         "version": "6.4",
         "recipe": {
@@ -292,7 +288,7 @@
             "./templates/base.html.twig"
         ]
     },
-<<<<<<< HEAD
+
     "symfony/uid": {
         "version": "6.4",
         "recipe": {
@@ -305,6 +301,7 @@
             "./config/packages/uid.yaml"
         ]
     },
+
     "symfony/ux-turbo": {
         "version": "2.22",
         "recipe": {
@@ -314,6 +311,7 @@
             "ref": "9dd2778a116b6e5e01e5e1582d03d5a9e82630de"
         }
     },
+
     "symfony/ux-twig-component": {
         "version": "2.23",
         "recipe": {
@@ -326,8 +324,7 @@
             "./config/packages/twig_component.yaml"
         ]
     },
-=======
->>>>>>> origin/Collaboration
+
     "symfony/validator": {
         "version": "6.4",
         "recipe": {
@@ -340,7 +337,7 @@
             "./config/packages/validator.yaml"
         ]
     },
-<<<<<<< HEAD
+
     "symfony/web-profiler-bundle": {
         "version": "6.4",
         "recipe": {
@@ -369,8 +366,7 @@
     "symfonycasts/verify-email-bundle": {
         "version": "v1.17.3"
     },
-=======
->>>>>>> origin/Collaboration
+
     "twig/extra-bundle": {
         "version": "v3.19.0"
     }
