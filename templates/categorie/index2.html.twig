@@ -1,4 +1,4 @@
-{% extends 'base2.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Catégories{% endblock %}
 
@@ -6,10 +6,7 @@
 <div class="container">
     <h1 class="text-center my-4">Liste des Catégories</h1>
 
-    <!-- Bouton pour créer une nouvelle catégorie -->
-    <div class="text-center mb-4">
-        <a href="{{ path('app_categorie_new') }}" class="btn btn-success">Créer une nouvelle catégorie</a>
-    </div>
+  
 
     <!-- Liste des catégories sous forme de cartes -->
     <div class="row">
@@ -19,8 +16,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ categorie.nom }}</h5>
                         <div class="d-flex justify-content-between">
-                            <a href="{{ path('app_categorie_show', {'id': categorie.id}) }}" class="btn btn-sm btn-primary">Voir</a>
-                            <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                            <a href="{{ path('app_categorie_showfront', {'id': categorie.id}) }}" class="btn btn-sm btn-primary">Voir</a>
                         </div>
                     </div>
                 </div>

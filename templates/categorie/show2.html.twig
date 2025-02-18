@@ -1,4 +1,4 @@
-{% extends 'base2.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Catégorie{% endblock %}
 
@@ -27,14 +27,8 @@
     <!-- Boutons pour actions avec espacement et taille uniforme -->
     <div class="d-flex justify-content-between mt-4">
         <!-- Bouton Retour à la liste -->
-        <a href="{{ path('app_categorie_index') }}" class="btn btn-secondary btn-lg w-25">Retour à la liste</a>
+        <a href="{{ path('app_categorie_indexfront') }}" class="btn btn-secondary btn-lg w-25">Retour à la liste</a>
         
-        <!-- Boutons Modifier et Supprimer alignés horizontalement avec taille uniforme -->
-        <div class="d-flex gap-2">
-
-            <a href="{{ path('app_categorie_edit', {'id': categorie.id}) }}" class="btn btn-warning btn-lg w-50">Modifier</a>
-            {{ include('categorie/_delete_form.html.twig') }}
-        </div>
     </div>
 </div>
 {% endblock %}

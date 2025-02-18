@@ -6,6 +6,8 @@ use App\Repository\ArticleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+
+
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 
 class Article
@@ -25,7 +27,9 @@ class Article
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?float $prix = null;
+    #[Assert\NotBlank(message: "Le prix est obligatoire.")]
+#[Assert\Positive(message: "Le prix doit être un nombre positif.")]
+private ?float $prix = null;
 
     #[ORM\Column(type: "integer")]
 #[Assert\NotBlank(message: "Le nombre d'articles est obligatoire.")]
@@ -41,9 +45,10 @@ class Article
     )]
     private ?string $image = null;
 
-    #[ORM\Column(type : "datetime_immutable")]
-    #[Assert\NotBlank]
-    #[Assert\LessThan("today +1 day", message: "La date ne peut pas être future.")]
+    #[ORM\Column(type: "datetime_immutable")]
+    #[Assert\NotBlank(message: "La date de publication est obligatoire.")]
+    #[Assert\Type("\DateTimeImmutable", message: "La date doit être valide.")]
+    #[Assert\LessThan("tomorrow", message: "La date ne peut pas être future.")]
     private ?\DateTimeImmutable $publiactiondate = null;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
