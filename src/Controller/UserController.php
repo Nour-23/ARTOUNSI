@@ -327,6 +327,17 @@ public function editPassword(
     UserPasswordHasherInterface $hasher,
     MailerInterface $mailer // Injecter le service Mailer
 ): Response {
+    // Vérifier si l'utilisateur est authentifié
+    if (!$this->getUser()) {
+        return $this->redirectToRoute('app_login'); // Rediriger si l'utilisateur n'est pas connecté
+    }
+
+    // Vérifier si l'utilisateur authentifié correspond à l'utilisateur que l'on essaie de modifier
+    $user = $this->getUser();
+    if ($user !== $choosenUser) {
+        throw $this->createAccessDeniedException('Vous ne pouvez pas modifier ce mot de passe.');
+    }
+
     $form = $this->createForm(PasswordChangeProfileType::class);
 
     $form->handleRequest($request);

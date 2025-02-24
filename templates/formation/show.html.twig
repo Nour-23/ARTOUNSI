@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 {% extends 'base2.html.twig' %}
+=======
+{% extends 'base.html.twig' %}
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
 
 {% block title %}Détails de la Formation{% endblock %}
 
@@ -22,6 +26,7 @@
                         <td>{{ formation.description }}</td>
                     </tr>
                     <tr>
+<<<<<<< HEAD
                         <th scope="row">Date de début</th>
                         <td>{{ formation.dateDebut ? formation.dateDebut|date('d/m/Y') : 'Non spécifié' }}</td>
                     </tr>
@@ -53,6 +58,11 @@
                             {% endif %}
                         </td>
                     </tr>
+=======
+                        <th scope="row">Durée</th>
+                        <td>{{ formation.duree }} heures</td>
+                    </tr>
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
                 </tbody>
             </table>
         </div>

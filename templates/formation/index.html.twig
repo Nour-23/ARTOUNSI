@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 {% extends 'base2.html.twig' %}
+=======
+{% extends 'base.html.twig' %}
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
 
 {% block title %}Liste des Formations{% endblock %}
 
@@ -15,18 +19,32 @@
         <table class="table table-bordered table-striped shadow">
             <thead class="table-dark">
                 <tr>
+<<<<<<< HEAD
                     <th>Nom</th>
                     <th>Description</th>
                     <th>Date de début</th>
+=======
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Durée</th>
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
                     <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for formation in formations %}
                     <tr>
+<<<<<<< HEAD
                         <td>{{ formation.nom }}</td>
                         <td>{{ formation.description }}</td>
                         <td>{{ formation.dateDebut ? formation.dateDebut|date('d/m/Y') : 'Non spécifiée' }}</td>
+=======
+                        <td>{{ formation.id }}</td>
+                        <td>{{ formation.nom }}</td>
+                        <td>{{ formation.description }}</td>
+                        <td>{{ formation.duree }} heures</td>
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
                         <td class="text-center">
                             <a href="{{ path('app_formation_show', {'id': formation.id}) }}" class="btn btn-info btn-sm">
                                 <i class="fas fa-eye"></i> Voir

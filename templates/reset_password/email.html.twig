@@ -13,6 +13,25 @@
       min-height: 100vh;
       padding: 20px;
     }
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px; /* Ajuste selon besoin */
+    height: 120px; /* Ajuste selon besoin */
+    border: 2px solid #E52C2C; /* Bordure rouge */
+    border-radius: 10px; /* Coins arrondis */
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9); /* Légère transparence */
+}
+
+.logo {
+    max-width: 80px; /* Taille du logo ajustée */
+    height: auto;
+}
+
+
+
 
     .bg-glass {
       background: rgba(255, 255, 255, 0.9);
@@ -68,10 +87,12 @@
     .text-red:hover {
       text-decoration: underline;
     }
+        </style>
+
         <div class="container my-5">
             <div class="row align-items-center justify-content-center">
                 <div class="col-md-6 text-center">
-                    <img src="{{ asset('images/logo-artounsi.png') }}" alt="Logo Artounsi" class="logo mb-4">
+<img src="{{ asset('images/logo-artounsi.png') }}" alt="Logo Artounsi" class="mb-4" style="max-width: 100px; height: auto; display: block; margin: 0 auto;">
                     <h1 class="my-4 display-5">
                         <span class="accent-text">Réinitialisation du mot de passe</span>
                     </h1>

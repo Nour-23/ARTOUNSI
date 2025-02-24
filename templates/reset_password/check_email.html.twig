@@ -5,83 +5,104 @@
 {% block body %}
 <section class="background-radial-gradient overflow-hidden">
     <style>
-         .background-radial-gradient {
-      background: linear-gradient(135deg, #2D2B30 20%, #3A3A3A 80%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
+        .background-radial-gradient {
+            background: linear-gradient(135deg, #2D2B30 20%, #3A3A3A 80%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px; /* Taille du cadre */
+    height: 120px;
+    border: 2px solid #E52C2C; /* Bordure rouge */
+    border-radius: 10px; /* Coins arrondis */
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9); /* Légère transparence */
+    margin: 0 auto 20px auto; /* Centrage et espacement */
+}
 
-    .bg-glass {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(15px);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
+.logo {
+    max-width: 80px; /* Taille ajustée du logo */
+    height: auto;
+}
 
-    .form-control {
-      border-radius: 10px;
-      padding: 15px;
-      font-size: 1rem;
-      width: 100%; 
-      margin-bottom: 20px;
-    }
 
-    .btn-primary {
-      background-color: #E52C2C;
-      border: none;
-      transition: background 0.3s ease, transform 0.2s ease-in-out;
-      width: 100%;
-    }
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
 
-    .btn-primary:hover {
-      background-color: #C41F1F;
-      transform: scale(1.05);
-    }
+        .form-control {
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1rem;
+            width: 100%;
+            margin-bottom: 20px;
+        }
 
-    .text-center {
-      text-align: center;
-    }
+        .btn-primary {
+            background-color: #E52C2C;
+            border: none;
+            transition: background 0.3s ease, transform 0.2s ease-in-out;
+            width: 100%;
+        }
 
-    .form-container {
-      max-width: 500px;
-      width: 100%;
-    }
+        .btn-primary:hover {
+            background-color: #C41F1F;
+            transform: scale(1.05);
+        }
 
-    h1 {
-      color: #ffffff;
-      font-weight: 700;
-      text-align: center;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      margin-bottom: 20px;
-    }
+        .text-center {
+            text-align: center;
+        }
 
-    /* Nouveau style pour le lien */
-    .text-red {
-      color: #E52C2C;
-      font-weight: 600;
-    }
+        .form-container {
+            max-width: 500px;
+            width: 100%;
+        }
 
-    .text-red:hover {
-      text-decoration: underline;
-    }
-        <div class="container my-5">
-            <div class="row align-items-center justify-content-center">
-                <div class="col-md-6 text-center">
-                    <img src="{{ asset('images/logo-artounsi.png') }}" alt="Logo Artounsi" class="logo mb-4">
-                    <h1 class="my-4 display-5">
-                        <span class="accent-text">Réinitialisation du mot de passe</span>
-                    </h1>
-                    <p>
-                        Si un compte correspondant à votre adresse e-mail existe, un e-mail vient d'être envoyé contenant un lien que vous pouvez utiliser pour réinitialiser votre mot de passe.
-                        Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-                    </p>
-                    <p>Si vous ne recevez pas d'e-mail, veuillez vérifier votre dossier de spam ou <a href="{{ path('app_forgot_password_request') }}">réessayer</a>.</p>
-                </div>
+        h1 {
+            color: #ffffff;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        /* Nouveau style pour le lien */
+        .text-red {
+            color: #E52C2C;
+            font-weight: 600;
+        }
+
+        .text-red:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <div class="container my-5">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-md-6 text-center">
+<div class="logo-container">
+    <img src="{{ asset('images/logo-artounsi.png') }}" alt="Logo Artounsi" class="logo">
+</div>
+                <h1 class="my-4 display-5">
+                    <span class="accent-text">Réinitialisation du mot de passe</span>
+                </h1>
+                <p>
+                    Si un compte correspondant à votre adresse e-mail existe, un e-mail vient d'être envoyé contenant un lien que vous pouvez utiliser pour réinitialiser votre mot de passe.
+                    Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                </p>
+                <p>Si vous ne recevez pas d'e-mail, veuillez vérifier votre dossier de spam ou <a href="{{ path('app_forgot_password_request') }}">réessayer</a>.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}

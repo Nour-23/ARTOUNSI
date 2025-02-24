@@ -1,5 +1,7 @@
 
 parameters:
+    google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+
     images_directory: '%kernel.project_dir%/public/uploads/images'
     images_directory_salle: '%kernel.project_dir%/public/uploads/salle'
     images_directory_activite: '%kernel.project_dir%/public/uploads/activite'
@@ -20,6 +22,16 @@ services:
             - { name: 'kernel.event_subscriber' }
 
     # Les classes dans src/ disponibles en tant que services
+# Enregistrement automatique des services (commandes, événements, etc.)
+
+    # Enregistrement des contrôleurs
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+
+
+    # Rendre les classes de src/ disponibles en tant que services
     App\:
         resource: '../src/'
         exclude:
@@ -29,3 +41,14 @@ services:
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads/photos'
+
+    # Enregistrement du GoogleAuthenticator
+    App\Security\GoogleAuthenticator:
+        arguments:
+            $clientRegistry: '@knpu.oauth2.registry'
+            $router: '@router'
+            $em: '@doctrine.orm.entity_manager'
+
+    # Enregistrement du UserRepository
+    App\Repository\UserRepository:
+        autowire: true

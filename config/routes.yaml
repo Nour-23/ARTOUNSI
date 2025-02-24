@@ -29,8 +29,4 @@ app_edit_principale:
 admin_dashboard:
     path: /admin
     controller: App\Controller\UserController::listUsers
-admin_profile_principal:
-    path: admin/profile/principale/{id}
-    controller: App\Controller\UserController::profilePrincipale2
-    requirements:
-        id: \d+
+    

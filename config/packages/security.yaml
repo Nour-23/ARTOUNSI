@@ -44,4 +44,5 @@ security:
         #- { path: ^/admin, roles: ROLE_ADMIN }
        
 monolog:
-    channels:[security]
+
+    channels: [security]

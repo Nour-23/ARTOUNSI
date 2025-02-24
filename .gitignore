@@ -27,8 +27,11 @@
 
 /src/Security
 
+<<<<<<< HEAD
 /public/uploads/
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
+=======
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
