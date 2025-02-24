@@ -1,0 +1,37 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+    <h1 style="text-align: center; margin-bottom: 20px;">Liste des utilisateurs</h1>
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="padding: 10px; border: 1px solid #ddd;">ID</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Nom</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Email</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Rôle</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Archivé</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                {% if 'ROLE_ADMIN' not in user.roles %}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">{{ user.id }}</td>
+                        <td style="padding: 10px;">{{ user.name }}</td>
+                        <td style="padding: 10px;">{{ user.email }}</td>
+                        <td style="padding: 10px;">{{ user.roles | join(', ') }}</td>
+                        <td style="padding: 10px; text-align: center;">{{ user.archived ? '✅' : '❌' }}</td>
+                        <td style="padding: 10px;">
+                            <a href="{{ path('admin_profile', { id: user.id }) }}" style="margin-right: 10px; text-decoration: none; color: #007BFF;">👁 Voir</a>
+                            <a href="{{ path('admin_archive_user', { id: user.id }) }}" onclick="return confirm('Voulez-vous vraiment archiver cet utilisateur ?');" style="margin-right: 10px; text-decoration: none; color: #DC3545;">🗄 Archiver</a>
+                            <a href="{{ path('admin_edit_profil', { id: user.id }) }}" style="text-decoration: none; color: #28A745;">✏ Modifier</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

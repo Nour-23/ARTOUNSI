@@ -35,6 +35,7 @@ final class ArticleController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
 
+
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
@@ -42,7 +43,7 @@ final class ArticleController extends AbstractController
 
                 try {
                     $imageFile->move(
-                        $this->getParameter('uploads_directory'), // Directory where images are stored
+                        $this->getParameter('images_directory_article'), // Directory where images are stored
                         $newFilename
                     );
                 } catch (FileException $e) {
@@ -51,6 +52,7 @@ final class ArticleController extends AbstractController
 
                 $article->setImage($newFilename);
             }
+            
 
             $entityManager->persist($article);
             $entityManager->flush();

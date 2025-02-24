@@ -1,12 +1,12 @@
 
 parameters:
-    google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
     images_directory: '%kernel.project_dir%/public/uploads/images'
     images_directory_salle: '%kernel.project_dir%/public/uploads/salle'
     images_directory_activite: '%kernel.project_dir%/public/uploads/activite'
     images_directory_product: '%kernel.project_dir%/public/uploads/product'
     images_directory_evenement: '%kernel.project_dir%/public/uploads/evenement'
-    profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile_pictures'
+    profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile'
+    images_directory_article : '%kernel.project_dir%/public/uploads/article'
 
 services:
     # Configuration par défaut pour les services dans ce fichier
@@ -26,3 +26,6 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%kernel.project_dir%/public/uploads/photos'

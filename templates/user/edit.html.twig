@@ -38,11 +38,11 @@
             {{ form_errors(form.adresse) }}
         </div>
         
-      <div class="col-12 mb-3">
-        {{ form_label(form.dateNaissance, 'Date de naissance') }}
-        {{ form_widget(form.dateNaissance, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.dateNaissance) }}
-      </div>
+        <div class="col-12 mb-3">
+            {{ form_label(form.dateNaissance, 'Date de naissance') }}
+            {{ form_widget(form.dateNaissance, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.dateNaissance) }}
+        </div>
 
         <div class="form-group mb-2">
             {{ form_label(form.role, 'Rôle', {'label_attr': {'class': 'font-weight-bold'}}) }}
@@ -58,7 +58,10 @@
 
         {% if user.photo %}
             <div class="profile-photo mb-2 text-center">
-                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid rounded-circle" />
+                <!-- Ajout du div pour le cadre autour de la photo -->
+                <div class="photo-frame">
+                    <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid rounded-circle" />
+                </div>
             </div>
         {% endif %}
 

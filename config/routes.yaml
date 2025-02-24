@@ -19,7 +19,18 @@ app_profile_principale:
     path: /profile/principale/{id}
     controller: App\Controller\UserController::profilePrincipale
     requirements:
-        id: \d+  # Ensure 'id' is a number
+        id: \d+
+app_edit_principale:
+    path: /profile/principale/{id}
+    controller: App\Controller\UserController::editprofile
+    requirements:
+        id: \d+
+ # Ensure 'id' is a number
 admin_dashboard:
     path: /admin
-    controller: App\Controller\Admin\DashboardController::inde
+    controller: App\Controller\UserController::listUsers
+admin_profile_principal:
+    path: admin/profile/principale/{id}
+    controller: App\Controller\UserController::profilePrincipale2
+    requirements:
+        id: \d+

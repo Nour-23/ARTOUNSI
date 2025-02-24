@@ -1,12 +1,10 @@
-<?php namespace App\Controller;
+<?php 
+namespace App\Controller;
 
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Uid\Ulid;
+use App\Form\PasswordChangeProfileType;
 use App\Entity\User;
 use App\Form\UserType;
-use App\Form\DeleteAccountType;
 use App\Form\UserEditType;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,16 +16,11 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use App\Service\FileUploader;
 use App\Form\LoginFormType;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Validator\Constraints\Length;
+
+
 
 
 use App\Repository\UserRepository;
@@ -37,13 +30,18 @@ class UserController extends AbstractController
     'google' => ['openid', 'profile', 'email'],
     // Add other services here as needed
 ];
+private $passwordEncoder;
+
+
     private $tokenStorage;
     private $entityManager;
 
-    public function __construct(TokenStorageInterface $tokenStorage, EntityManagerInterface $entityManager)
+    public function __construct(TokenStorageInterface $tokenStorage, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordEncoder)
     {
         $this->entityManager = $entityManager;
         $this->tokenStorage = $tokenStorage;
+      $this->passwordEncoder = $passwordEncoder;
+        
     }
 
     #[Route('/register', name: 'app_register')]
@@ -108,7 +106,7 @@ class UserController extends AbstractController
         $user = $security->getUser(); 
         if ($user instanceof User) {
             if (in_array('ROLE_ADMIN', $user->getRoles())) {
-                return $this->redirectToRoute('app_main'); // Redirection si ADMIN
+                return $this->redirectToRoute('app_main'); 
             }
             return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
         }
@@ -129,16 +127,17 @@ class UserController extends AbstractController
     
             // Vérification si l'email existe en base
             $user = $userRepository->findOneBy(['email' => $email]);
+            if ($user->isArchived()) {
+                $this->addFlash('error', 'Ce compte est archivé et ne peut plus être utilisé.');
+                return $this->redirectToRoute('app_login');
+            }
             if (!$user) {
                 $this->addFlash('error', 'Cet email est introuvable.');
                 return $this->redirectToRoute('app_forgot_password_request');
             }
     
             // Vérifier si l'utilisateur est archivé
-            if ($user->isArchived()) {
-                $this->addFlash('error', 'Ce compte est archivé et ne peut plus être utilisé.');
-                return $this->redirectToRoute('app_login');
-            }
+           
     
             // Vérification du mot de passe
             if (!password_verify($password, $user->getPassword())) {
@@ -183,10 +182,10 @@ class UserController extends AbstractController
             return $this->redirectToRoute('admin_dashboard');
         }
 
-        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+        return $this->redirectToRoute('app_profile_principale',  ['id' => $user->getId()]);
     }
 
-    #[Route('/profile/{id<\d+>}', name: 'app_profile')]
+    #[Route('/profile/{id<\d+>}', name: 'app_profil')]
    
     public function profile(int $id, UserRepository $userRepository): Response
     {
@@ -216,7 +215,7 @@ class UserController extends AbstractController
 
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('app_profile', ['id' => $user->getId()]);
+            return $this->redirectToRoute('app_profil', ['id' => $user->getId()]);
         }
 
         return $this->render('user/edit.html.twig', [
@@ -248,6 +247,146 @@ public function archiveUser(User $user): Response
 
     $this->addFlash('success', 'Le compte a été archivé avec succès.');
     return $this->redirectToRoute('app_login');
+}
+#[Route('/admin', name: 'admin_users')]
+public function listUsers(UserRepository $userRepository): Response
+{
+    $users = $userRepository->findAll(); // Récupère tous les utilisateurs
+
+    return $this->render('admin/users.html.twig', [
+        'users' => $users,
+    ]);
+}
+#[Route('/admin/profile/edit/{id}', name: 'admin_edit_profil')]
+public function editadmin(Request $request, User $user, FileUploader $fileUploader): Response
+{
+    $form = $this->createForm(UserEditType::class, $user);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $photoFile = $form->get('photo')->getData();
+        if ($photoFile) {
+            $filename = $fileUploader->upload($photoFile);
+            $user->setPhoto($filename);
+        }
+
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('admin_profile', ['id' => $user->getId()]);
+    }
+
+    return $this->render('admin/edit2.html.twig', [
+        'form' => $form->createView(),
+        'user' => $user,
+    ]);
+}
+#[Route('admin/profile/{id<\d+>}', name: 'admin_profile')]
+   
+public function adminprofile(int $id, UserRepository $userRepository): Response
+{
+    $user = $userRepository->find($id);
+
+    if (!$user) {
+        throw $this->createNotFoundException('Utilisateur non trouvé');
+    }
+
+    return $this->render('admin/profile2.html.twig', [
+        'user' => $user
+    ]);
+}
+#[Route('admin/profile/archive/{id}', name: 'admin_archive_user')]
+public function archiveUserbyadmin(User $user): Response
+{
+    $user->setArchived(true);
+    $this->entityManager->flush();
+
+    $this->addFlash('success', 'Le compte a été archivé avec succès.');
+    return $this->redirectToRoute('admin_users');
+}
+#[Route('admin/profile/principale/{id}', name: 'admin_profile_principal')]
+public function profilePrincipale2(int $id, UserRepository $userRepository): Response
+{
+    // Récupérer l'utilisateur par son ID
+    $user = $userRepository->find($id);
+
+    if (!$user) {
+        throw $this->createNotFoundException('Utilisateur non trouvé');
+    }
+
+    // Passer l'utilisateur à la vue
+    return $this->render('admin/profilprincipale2.html.twig', [
+        'user' => $user
+    ]);
+}
+
+#[Route('/utilisateur/edition-mot-de-passe/{id}', 'user_edit_password', methods: ['GET', 'POST'])]
+public function editPassword(
+    User $choosenUser,
+    Request $request,
+    EntityManagerInterface $manager,
+    UserPasswordHasherInterface $hasher,
+    MailerInterface $mailer // Injecter le service Mailer
+): Response {
+    $form = $this->createForm(PasswordChangeProfileType::class);
+
+    $form->handleRequest($request);
+    $progress = 0; // Valeur d'avancement par défaut
+
+    if ($form->isSubmitted()) {
+        if ($form->isValid()) {
+            // Étape 1 : Vérification du mot de passe actuel
+            $currentPassword = $form->get('currentPassword')->getData();
+            if ($hasher->isPasswordValid($choosenUser, $currentPassword)) {
+                $progress = 50; // 50% de l'avancement une fois le mot de passe vérifié
+
+                // Étape 2 : Changer le mot de passe
+                $newPassword = $form->get('newPassword')->getData();
+                $encodedPassword = $hasher->hashPassword(
+                    $choosenUser,
+                    $newPassword
+                );
+                $choosenUser->setPassword($encodedPassword);
+
+                $manager->persist($choosenUser);
+                $manager->flush();
+
+                // Étape 3 : Envoyer un email de confirmation
+                $email = (new Email())
+                    ->from('no-reply@votresite.com')
+                    ->to($choosenUser->getEmail())
+                    ->subject('Votre mot de passe a été modifié')
+                    ->text('Votre mot de passe a été changé avec succès. Si vous n\'êtes pas à l\'origine de cette demande, veuillez contacter notre support.');
+
+                $mailer->send($email);
+
+                $progress = 100; // 100% une fois l'email envoyé
+
+                $this->addFlash('success', 'Le mot de passe a été modifié et un email vous a été envoyé.');
+
+                return $this->redirectToRoute('app_profile', ['id' => $choosenUser->getId()]);
+            } else {
+                $progress = 0; // Si le mot de passe est incorrect, l'avancement reste à 0
+                $this->addFlash('warning', 'Le mot de passe actuel est incorrect.');
+
+                // Envoyer un email d'alerte pour indiquer l'erreur
+                $email = (new Email())
+                    ->from('no-reply@votresite.com')
+                    ->to($choosenUser->getEmail())
+                    ->subject('Tentative de modification de mot de passe échouée')
+                    ->text('Une tentative de modification de votre mot de passe a échoué. Assurez-vous que vos informations sont correctes.');
+
+                $mailer->send($email);
+            }
+        } else {
+            $progress = 25; // 25% si le formulaire est soumis mais pas valide
+            $this->addFlash('warning', 'Veuillez remplir tous les champs correctement.');
+        }
+    }
+
+    return $this->render('user/change.html.twig', [
+        'form' => $form->createView(),
+        'progress' => $progress,  // Transmettre l'avancement à la vue
+    ]);
 }
 
 }

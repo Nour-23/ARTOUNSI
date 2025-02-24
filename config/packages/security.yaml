@@ -1,32 +1,47 @@
 security:
-    # Définir un provider d'utilisateur pour le firewall
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: email # ou 'username', selon votre structure
+                property: email
 
-    # Utilisation de password_hashers au lieu de encoders
-    password_hashers:
-        App\Entity\User:
-            algorithm: bcrypt
-
-    # Firewalls
     firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        login:
+            pattern: ^/login
+            security: false
+
         main:
-            # Connexion via un formulaire
-            form_login:
-                login_path: /login
-                check_path: /login
-                default_target_path: home
-            # Définir le provider d'utilisateur
+            lazy: true
             provider: app_user_provider
+            entry_point: App\Security\UserAuthAuthenticator
+            custom_authenticators:
+                - App\Security\GoogleAuthenticator
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                username_parameter: _email
+                password_parameter: _password
+                enable_csrf: true
+                default_target_path: /profile/principale/{id}
+                always_use_default_target_path: false
+
             logout:
                 path: /logout
-                target: home
+                target: /login  
 
-    # Contrôle d'accès
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+
     access_control:
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/profile, roles: ROLE_USER }
+        #- { path: ^/admin, roles: ROLE_ADMIN }
+       
+monolog:
+    channels:[security]
