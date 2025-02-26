@@ -6,7 +6,65 @@
     <div class="container mt-5">
         <div class="card shadow-lg border-0 rounded-4 p-4" style="background-color: white;">
             <h2 class="text-center mb-4 text-dark">📋 Liste des Offres</h2>
+               <!-- Section des Statistiques -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Offres Actives</h5>
+                            <p class="card-text">{{ activeOffres }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-body">
+                            <h5 class="card-title">Offres Archivées</h5>
+                            <p class="card-text">{{ archivedOffres }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">Total des Offres</h5>
+                            <p class="card-text">{{ totalOffres }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Formulaire de recherche -->
+<form method="GET" action="{{ path('app_main') }}" class="mb-4">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <input type="text" name="title" class="form-control" placeholder="Rechercher par titre" value="{{ searchTitle }}">
+        </div>
 
+        <div class="col-md-4">
+            <select name="category" class="form-select">
+                <option value="">Toutes les catégories</option>
+                {% for category in category_offres %}
+                    <option value="{{ category.id }}" {% if category.id == searchCategory %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">Tous les statuts</option>
+                <option value="active" {% if searchStatus == 'active' %}selected{% endif %}>Actif</option>
+                <option value="inactive" {% if searchStatus == 'inactive' %}selected{% endif %}>Inactif</option>
+                <option value="archivé" {% if searchStatus == 'archivé' %}selected{% endif %}>Archivé</option>
+            </select>
+        </div>
+
+        <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-dark">🔍 Rechercher</button>
+        </div>
+    </div>
+</form>
             <!-- Bouton pour voir les offres archivées -->
             <div class="d-flex justify-content-end mb-3">
                 <a href="{{ path('liste_offres_archivees') }}" class="btn btn-dark shadow-sm px-4 py-2">
@@ -76,6 +134,10 @@
                 </table>
             </div>
 
+<!-- Pagination -->
+<div class="d-flex justify-content-center mt-4">
+    {{ knp_pagination_render(offres) }}
+</div>
             <!-- Bouton pour ajouter une nouvelle offre -->
             <div class="text-center mt-4">
               <a href="{{ path('create_offre') }}" class="btn btn-primary shadow-sm px-5 py-2">
