@@ -8,7 +8,7 @@ parameters:
     images_directory_product: '%kernel.project_dir%/public/uploads/product'
     images_directory_evenement: '%kernel.project_dir%/public/uploads/evenement'
     profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile'
-    images_directory_article : '%kernel.project_dir%/public/uploads/article'
+    images_directory_article: '%kernel.project_dir%/public/uploads/article'
 
 services:
     # Configuration par défaut pour les services dans ce fichier

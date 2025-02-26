@@ -89,7 +89,7 @@ final class ArticleController extends AbstractController
             // Traitez ici l'image (par exemple, la déplacer vers un répertoire de votre choix)
             $newFilename = uniqid() . '.' . $imageFile->guessExtension();
             $imageFile->move(
-                $this->getParameter('image_directory'),
+                $this->getParameter('images_directory_article'),
                 $newFilename
             );
             // Assurez-vous de mettre à jour la propriété image avec le nouveau nom de fichier
