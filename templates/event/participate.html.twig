@@ -26,18 +26,15 @@
 
     <div class="container mt-4">
 
-        <h1 class="text-center mb-4">Événements Disponibles</h1>
-        {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
-
-    {% endfor %}
         <div class="row">
             {% for event in events %}
             <div class="col-12 col-md-6 col-lg-4 mb-4">
                 <div class="event-card p-4 border rounded shadow-sm">
                     <h3>{{ event.title }}</h3>
                     <p>{{ event.description }}</p>
+                    <p><strong>Category: </strong><td>{{ event.eventCategory }}</td></p>
                     <p><strong>Date:</strong> {{ event.date|date('d-m-Y') }}</p>
+                    <p>📍 {{ event.location }}</p>
 
                     {# Show Participate button without checking login status #}
                     <a href="{{ path('participant_event_participate', {'id': event.id}) }}" class="btn btn-secondary me-2 text-white">Participate</a>

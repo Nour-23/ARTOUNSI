@@ -30,19 +30,15 @@ public function participate(int $id, EventRepository $eventRepository, EntityMan
     $event = $eventRepository->find($id);
 
     if (!$event) {
-        // Handle the case where the event is not found
         $this->addFlash('error', 'Event not found!');
         return $this->redirectToRoute('app_participant');
     }
 
-    // Create a new participation entry
     $participation = new Participation();
     $participation->setEvent($event);
 
-    // Set a default response value (0 for pending)
     $participation->setResponse(0);
 
-    // Persist the participation in the database
     $em->persist($participation);
     $em->flush();
 

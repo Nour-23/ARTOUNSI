@@ -19,13 +19,15 @@ class Event
     #[ORM\OneToMany(mappedBy: "event", targetEntity: Participation::class, cascade: ["remove"])]
     private Collection $participations;
     
-   
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $eventCategory = null;
 
     #[ORM\Column(type: 'datetime')]
     #[Assert\NotBlank(message: 'Date can\'t be empty.')]
@@ -42,6 +44,8 @@ class Event
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated_at = null;
 
+
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -53,14 +57,14 @@ class Event
         return $this->id;
     }
 
-    public function getCategoryId(): ?int
+    public function getEventCategory(): ?string
     {
-        return $this->category_id;
+        return $this->eventCategory;
     }
 
-    public function setCategoryId(?int $category_id): static
+    public function setEventCategory(string $eventCategory): static
     {
-        $this->category_id = $category_id;
+        $this->eventCategory = $eventCategory;
         return $this;
     }
 

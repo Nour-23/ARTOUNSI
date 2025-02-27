@@ -13,24 +13,21 @@ class Participation
     #[ORM\Column]
     private ?int $id = null;
 
-    // Define the Many-to-One relationship with the Event entity
     #[ORM\ManyToOne(inversedBy: 'participations')]
-    #[ORM\JoinColumn(nullable: false)]  // Ensure this is not nullable for the foreign key constraint
+    #[ORM\JoinColumn(nullable: false)]  
     private ?Event $event = null;
 
-    #[ORM\Column(type: "integer", nullable: true)]  // Allow null values for the response
-    private ?int $response = null;  // 0 for No, 1 for Yes, or null if no response yet
+    #[ORM\Column(type: "integer", nullable: true)]  
+    private ?int $response = null;  
 
-    #[ORM\Column(type: "text", nullable: true)]  // Feedback can be nullable as well
+    #[ORM\Column(type: "text", nullable: true)]  
     private ?string $feedback = null;
 
-    // Getter and Setter for ID
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    // Getter and Setter for Event
     public function getEvent(): ?Event
     {
         return $this->event;
@@ -43,13 +40,12 @@ class Participation
         return $this;
     }
 
-    // Getter and Setter for Response
     public function getResponse(): ?int
     {
         return $this->response;
     }
 
-    public function setResponse(?int $response): self  // Allow nullable response
+    public function setResponse(?int $response): self  
     {
         if ($response !== null && !in_array($response, [0, 1])) {
             throw new \InvalidArgumentException('Response must be 0, 1, or null');
@@ -60,7 +56,6 @@ class Participation
         return $this;
     }
 
-    // Getter and Setter for Feedback
     public function getFeedback(): ?string
     {
         return $this->feedback;

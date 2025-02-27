@@ -38,7 +38,6 @@ class ParticipationController extends AbstractController
     #[Route('/{id}/feedback', name: 'participation_feedback', methods: ['GET', 'POST'])]
     public function feedback(Request $request, Participation $participation, EntityManagerInterface $entityManager): Response
     {
-        // Create a form just for feedback
         $form = $this->createFormBuilder($participation)
             ->add('feedback', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
@@ -56,7 +55,7 @@ class ParticipationController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Your feedback has been submitted!');
-            return $this->redirectToRoute('participation_list'); // Redirect to list after submitting
+            return $this->redirectToRoute('participation_list'); // 
         }
 
         return $this->render('event/feedback.html.twig', [

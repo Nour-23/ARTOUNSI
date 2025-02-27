@@ -31,6 +31,13 @@ class EventType extends AbstractType
                     new Assert\NotBlank(['message' => 'La description est obligatoire']),
                 ],
             ])
+            ->add('eventCategory', TextType::class, [
+                'label' => 'Category',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Catégorie'],
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'La catégiore est obligatoire']),
+                ],
+            ])
             ->add('date', DateTimeType::class, [
                 'label' => 'Date de l\'événement',
                 'widget' => 'single_text',

@@ -50,17 +50,4 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    /**
-     * Rechercher des événements par catégorie (si vous avez une relation entre catégorie et événement)
-     */
-    public function findByCategoryId(int $categoryId): array
-    {
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.category_id = :categoryId')
-            ->setParameter('categoryId', $categoryId)
-            ->orderBy('e.date', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
 }

@@ -59,7 +59,6 @@ class Participant
 
     public function getRoles(): array
     {
-        // You can assign roles like this:
         if ($this->role === 'admin') {
             return ['ROLE_ADMIN'];
         }

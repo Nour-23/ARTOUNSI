@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'back.html.twig' %}
 
 {% block title %}Event index{% endblock %}
 
@@ -13,6 +13,7 @@
                     <th>Title</th>
                     <th>Description</th>
                     <th>Date</th>
+                    <th>Category</th>
                     <th>Location</th>
                     <th>Actions</th>
                 </tr>
@@ -23,6 +24,7 @@
                         <td>{{ event.title }}</td>
                         <td>{{ event.description }}</td>
                         <td>{{ event.date ? event.date|date('Y-m-d H:i:s') : 'No Date' }}</td>
+                        <td>{{ event.eventCategory }}</td>
                         <td>{{ event.location }}</td>
                         <td>
                             <a href="{{ path('event_show', {'id': event.id}) }}" class="btn btn-primary">Show</a>
