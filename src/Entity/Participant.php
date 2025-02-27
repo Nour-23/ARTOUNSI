@@ -1,6 +1,9 @@
 <?php
 
-// src/Entity/Participant.php
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ParticipantRepository;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
 class Participant
@@ -16,21 +19,16 @@ class Participant
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: "string", length: 255)]
     private ?string $role = null;
 
-    // Getter et Setter pour $event_id à supprimer
+    #[ORM\ManyToOne(targetEntity: Event::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    private ?Event $event = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -41,7 +39,6 @@ class Participant
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -53,22 +50,29 @@ class Participant
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
     public function getRoles(): array
     {
-        if ($this->role === 'admin') {
-            return ['ROLE_ADMIN'];
-        }
-        return ['ROLE_PARTICIPANT'];
+        return $this->role === 'admin' ? ['ROLE_ADMIN'] : ['ROLE_PARTICIPANT'];
     }
 
     public function setRole(string $role): static
     {
         $this->role = $role;
+        return $this;
+    }
 
+    public function getEvent(): ?Event
+    {
+        return $this->event;
+    }
+
+    public function setEvent(?Event $event): static
+    {
+        $this->event = $event;
         return $this;
     }
 }
+

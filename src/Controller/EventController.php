@@ -75,6 +75,7 @@ class EventController extends AbstractController
         ]);
     }
 
+
     #[Route('/{id}/delete', name: 'event_delete', methods: ['POST'])]
     public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
     {
@@ -87,4 +88,7 @@ class EventController extends AbstractController
 
         return $this->redirectToRoute('event_index');
     }
+
+    
+    
 }
