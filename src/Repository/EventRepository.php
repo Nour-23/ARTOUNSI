@@ -16,6 +16,16 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
+/** filter */
+
+    public function findDistinctCategories(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->select('DISTINCT e.eventCategory')
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
+    
     /**
      * Méthode pour trouver un événement par son ID
      */
