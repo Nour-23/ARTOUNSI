@@ -108,4 +108,5 @@ class CategoryOffre
 
         return $this;
     }
+    
 }

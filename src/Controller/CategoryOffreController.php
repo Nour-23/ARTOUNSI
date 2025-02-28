@@ -7,6 +7,8 @@ use App\Form\CategoryOffreType;
 use App\Repository\CategoryOffreRepository;
 use App\Repository\OffreRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,4 +82,5 @@ final class CategoryOffreController extends AbstractController
 
         return $this->redirectToRoute('app_category_offre_index', [], Response::HTTP_SEE_OTHER);
     }
+    
 }

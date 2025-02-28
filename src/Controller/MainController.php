@@ -15,11 +15,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\CategoryOffre;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Service\EmailNotificationService; 
 final class MainController extends AbstractController
 {
     private $em;
-    public function __construct(EntityManagerInterface $em){
+    private $emailNotificationService;
+    public function __construct(EntityManagerInterface $em,EmailNotificationService $emailNotificationService){
         $this->em = $em;
+        $this->emailNotificationService = $emailNotificationService;  // Stocker le service
     }
     #[Route('/main', name: 'app_main')]
     #[Route('/main', name: 'app_main')]
@@ -80,7 +83,12 @@ final class MainController extends AbstractController
         $this->em->persist($offre);
         $this->em->flush();
         $this->em->clear(); 
-
+       // Envoi de l'email après l'insertion de l'offre
+       $this->emailNotificationService->sendOfferNotification(
+        'asmabaalouch6@gmail.com',  // L'adresse à qui envoyer l'email
+        'New Offer Created',
+        'A new offer has been created and is now live on the platform.'  // Contenu du message
+    );
         $this->addFlash('message','Inserted successfully.');
         return $this->redirectToRoute('app_main');
       }
