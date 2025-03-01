@@ -42,17 +42,28 @@
 
 <div class="container mt-5" id="events">
     <h2 class="text-center mb-4">Available Events</h2>
-    {# Filter Form #}
     <form method="get" action="{{ path('app_participant') }}" class="mb-4">
-        <select name="category" class="form-select" onchange="this.form.submit()">
-            <option value="">All Categories</option>
-            {% for category in categories %}
-                <option value="{{ category }}" {% if selectedCategory == category %}selected{% endif %}>
-                    {{ category }}
-                </option>
-            {% endfor %}
-        </select>
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if selectedCategory %}
+                    {{ selectedCategory }}
+                {% else %}
+                    Select Category
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ path('app_participant') }}">All Categories</a></li>
+                {% for category in categories %}
+                    <li>
+                        <a class="dropdown-item" href="{{ path('app_participant', {'category': category}) }}">
+                            {{ category }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </form>
+    
 
     {# Event List #}
     <div class="row mt-4">
