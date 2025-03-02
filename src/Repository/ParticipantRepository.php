@@ -16,6 +16,18 @@ class ParticipantRepository extends ServiceEntityRepository
         parent::__construct($registry, Participant::class);
     }
 
+    /**notification */
+
+    public function findParticipantsByEvent($event)
+{
+    return $this->createQueryBuilder('p')
+        ->where(':event MEMBER OF p.events')
+        ->setParameter('event', $event)
+        ->getQuery()
+        ->getResult();
+}
+
+
 //    /**
 //     * @return Participant[] Returns an array of Participant objects
 //     */
