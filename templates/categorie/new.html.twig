@@ -1,0 +1,17 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}New Categorie{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center my-4">Créer une nouvelle Catégorie</h1>
+
+    <!-- Inclure le formulaire -->
+    {{ include('categorie/_form.html.twig') }}
+
+    <!-- Bouton retour avec espacement -->
+    <div class="text-center mt-4">
+        <a href="{{ path('app_categorie_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}

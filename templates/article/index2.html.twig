@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center my-4">Liste des articles</h1>
+ <!-- Bouton pour consulter les catégories -->
+    <div class="text-center mb-4">
+        <a href="{{ path('app_categorie_indexfront') }}" class="btn btn-info">Consulter les catégories</a>
+    </div>
+    
+    <div class="row">
+        {% for article in articles %}
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-img-top text-center p-3">
+                        {% if article.image %}
+                            <img src="{{ asset('uploads/images/' ~ article.image) }}" alt="{{ article.nom }}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="{{ asset('images/default-image.png') }}" alt="Image par défaut" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ article.nom }}</h5>
+                        <p class="card-text text-truncate">{{ article.description }}</p>
+                        <p><strong>Prix :</strong> {{ article.prix }} TND</p>
+                        <p><strong>Catégorie :</strong> {{ article.categorie.nom }}</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_article_showfront', {'id': article.id}) }}" class="btn btn-sm btn-primary">Détails</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="alert alert-warning">Pas d'articles disponibles !</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    
+</div>
+{% endblock %}

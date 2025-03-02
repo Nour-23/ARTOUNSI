@@ -1,32 +1,43 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+
+    images_directory: '%kernel.project_dir%/public/uploads/images'
+    images_directory_salle: '%kernel.project_dir%/public/uploads/salle'
+    images_directory_activite: '%kernel.project_dir%/public/uploads/activite'
+    images_directory_product: '%kernel.project_dir%/public/uploads/product'
+    images_directory_evenement: '%kernel.project_dir%/public/uploads/evenement'
+    profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile'
+    images_directory_article: '%kernel.project_dir%/public/uploads/article'
 
 services:
-    # default configuration for services in *this* file
+    # Configuration par défaut pour les services dans ce fichier
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-
-        # Mailer Service Configuration
-    Symfony\Component\Mailer\MailerInterface:
-        alias: mailer
-
-
-
-    # Register the SendEventRemindersCommand explicitly as a command
-    App\Command\SendEventRemindersCommand:
+        autowire: true      # Injection automatique des dépendances
+        autoconfigure: true # Enregistrement automatique des services comme commandes, événements, etc.
+        
+    # Enregistrement des contrôleurs (si vous avez des contrôleurs spécifiques)
+    App\Controller\LogoutEventSubscriberController:
         tags:
-            - { name: 'console.command' }
+            - { name: 'kernel.event_subscriber' }
+
+    # Enregistrement des écouteurs d'événements
+    App\EventListener\LoginListener:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'  # Injection de l'EntityManager
+            $logger: '@logger'  # Injection du Logger
+        tags:
+      
+            - { name: 'kernel.event_listener', event: 'security.interactive_login' , priority: 10}
+# config/services.yaml
 
 
 
+    # Enregistrement automatique des services dans src/
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
+    # Rendre les classes de src/ disponibles en tant que services
     App\:
         resource: '../src/'
         exclude:
@@ -34,5 +45,27 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    # Enregistrement du service FileUploader
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%kernel.project_dir%/public/uploads/photos'
+
+    # Enregistrement du GoogleAuthenticator
+    App\Security\GoogleAuthenticator:
+        arguments:
+            $clientRegistry: '@knpu.oauth2.registry'
+            $router: '@router'
+            $em: '@doctrine.orm.entity_manager'
+
+    # Enregistrement du UserRepository
+    App\Repository\UserRepository:
+        autowire: true
+
+        # Mailer Service Configuration
+    Symfony\Component\Mailer\MailerInterface:
+        alias: mailer
+
+    # Register the SendEventRemindersCommand explicitly as a command
+    App\Command\SendEventRemindersCommand:
+        tags:
+            - { name: 'console.command' }

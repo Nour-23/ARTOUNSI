@@ -29,23 +29,45 @@
 
 				<div class="collapse navbar-collapse" id="navbarsFurni">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li>
+						<li class="nav-item active">
 							<a class="nav-link" href="index.html">Home</a>
 						</li>
-						<li><a class="nav-link" href="shop.html">Shop</a></li>
-						<li><a class="nav-link" href="about.html">Formation</a></li>
+						<li><a class="nav-link" href="{{ path('app_formation_indexfront')}}"">Formation</a></li>
+
+
 						<li><a class="nav-link" href="services.html">Service</a></li>
-						<li class="nav-item active"><a class="nav-link" href="{{ path('app_participant') }}">Evenement</a></li>
+                        <li><a class="nav-link" href="{{ path('asma')}}">Offre</a></li>
+						<li><a class="nav-link" href="{{ path('app_article_indexfront')}}">Article</a></li>
+						<li><a class="nav-link" href="blog.html">Evenement</a></li>
 						<li><a class="nav-link" href="contact.html">Reclamation</a></li>
+	  
 					</ul>
 
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li><a class="nav-link" href="cart.html"><img src="{{asset('images/cart.svg')}}"></a></li>
+  {% if app.user %}
+    <li>
+        <a class="nav-link" href="{{ path('app_profile_principale', {'id': app.user.id}) }}">
+Profile
+        </a>
+    </li>
+{% else %}
+    <li>
+        <a class="nav-link" href="{{ path('app_login') }}">
+PROFILE        </a>
+    </li>
+{% endif %}
+
+				   
+				   
 					</ul>
 				</div>
 			</div>
 				
 		</nav>
+		{% if app.user and 'ROLE_ADMIN' in app.user.roles %}
+    <a href="{{ path('admin_dashboard') }}">Backoffice</a>
+{% endif %}
+
 		<!-- End Header/Navigation -->
 
         {% block body %}{% endblock %}
@@ -53,6 +75,7 @@
 		<script src="{{asset('js/tiny-slider.js')}}"></script>
 		<script src="{{asset('js/custom.js')}}"></script>
       {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     
     

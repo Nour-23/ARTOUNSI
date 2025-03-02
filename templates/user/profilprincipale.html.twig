@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ user.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5 text-center">
+        <h2>Profil de {{ user.name }}</h2>
+
+        <!-- Photo de Profil -->
+        <div class="profile-photo my-4">
+            {% if user.photo %}
+                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid rounded-circle" style="max-width: 150px; height: 150px; object-fit: cover;">
+            {% else %}
+                <img src="{{ asset('images/default-avatar.png') }}" alt="Photo de profil par défaut" class="img-fluid rounded-circle" style="max-width: 150px; height: 150px; object-fit: cover;">
+            {% endif %}
+        </div>
+
+       <!-- Boutons d'action -->
+<div class="d-grid gap-3 col-6 mx-auto">
+    <a href="{{ path('app_edit_profile', {'id': user.id}) }}" class="btn btn-dark">Modifier le profil</a>
+<a href="{{path('user_edit_password',{'id': user.id}) }} "class="btn btn-secondary">Réinitialiser le mot de passe</a>
+    <a href="{{ path('app_logout') }}" class="btn btn-gray">Se déconnecter</a>
+<a href="{{ path('app_archive_user' , {'id': user.id}) }}"class="btn btn-white-outline">Archiver le profil</a>
+</form>
+
+</div>
+
+
+    </div>
+{% endblock %}

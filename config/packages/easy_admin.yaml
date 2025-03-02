@@ -1,0 +1,4 @@
+easy_admin:
+    site_name: 'Mon Site Admin'
+    design:
+        theme: 'default'

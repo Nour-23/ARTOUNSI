@@ -1,0 +1,29 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Profil de {{ user.name }}{% endblock %}
+
+{% block body %}
+    <div style="max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; text-align: center;">
+        <h2 style="margin-bottom: 20px;">Profil de {{ user.name }}</h2>
+
+        <div class="profile-photo" style="margin-bottom: 15px;">
+            {% if user.photo %}
+                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;" />
+            {% else %}
+                <img src="{{ asset('images/default-profile.jpg') }}" alt="Photo de profil par défaut" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;" />
+            {% endif %}
+        </div>
+
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <p><strong>CIN :</strong> {{ user.cin }}</p>
+        <p><strong>Téléphone :</strong> {{ user.numtel }}</p>
+        <p><strong>Adresse :</strong> {{ user.adresse }}</p>
+        <p><strong>Date de naissance :</strong> {{ user.dateNaissance|date('d/m/Y') }}</p>
+        <p><strong>Rôle :</strong> {{ user.role }}</p>
+
+        <a href="{{ path('admin_edit_profil', {id: user.id}) }}" class="btn btn-primary" style="display: inline-block; padding: 10px 15px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px; margin-top: 15px;">Modifier son profil</a>
+         <a href="{{ path('admin_users') }}" class="btn btn-primary" style="display: inline-block; padding: 10px 15px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px; margin-top: 15px;">Retour vers la liste des utilisateurs</a>
+
+
+    </div>
+{% endblock %}
