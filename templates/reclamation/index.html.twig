@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reclamation Index{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Reclamation Index</h1>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover text-center align-middle shadow-lg">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for reclamation in reclamations %}
+                    <tr>
+                        <td>{{ reclamation.id }}</td>
+                        <td>{{ reclamation.titre }}</td>
+                        <td class="text-truncate" style="max-width: 250px;">{{ reclamation.description }}</td>
+                        <td>
+                            {% if reclamation.statut == 'Pending' %}
+                                <span class="badge bg-warning text-dark">{{ reclamation.statut }}</span>
+                            {% elseif reclamation.statut == 'Resolved' %}
+                                <span class="badge bg-success">{{ reclamation.statut }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ reclamation.statut }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_reclamation_show', {'id': reclamation.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> Show
+                            </a>
+                            <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('app_reclamation_new') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Create New Reclamation
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .table th {
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .badge {
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 12px;
+        }
+    </style>
+{% endblock %}
