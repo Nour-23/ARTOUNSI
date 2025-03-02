@@ -1,5 +1,8 @@
 <?php 
 namespace App\Controller;
+use App\Service\EmailService;
+use App\Form\ChangePasswordType;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 use App\Form\PasswordChangeProfileType;
 use App\Entity\User;
@@ -578,5 +581,58 @@ public function profilAdmin(Security $security): Response
         'user' => $user
     ]);
 }
+#[Route('/change-password', name: 'change_password')]
+public function changePassword(Request $request, Security $security, UserPasswordHasherInterface $passwordHasher, EmailService $emailService)
+{
+    // Récupérer l'utilisateur actuel
+    $user = $security->getUser();
 
+    // Vérifier si l'utilisateur est authentifié
+    if (!$user) {
+        $this->addFlash('error', 'Utilisateur non connecté. Veuillez vous connecter.');
+        return $this->redirectToRoute('app_login'); // Redirection vers la page de connexion
+    }
+
+    // Assurez-vous que l'utilisateur est une instance de User
+    if (!$user instanceof User) {
+        // Gérer le cas où l'utilisateur n'est pas du bon type
+        $this->addFlash('error', 'Utilisateur invalide.');
+        return $this->redirectToRoute('app_login'); // Ou redirigez vers la page d'accueil ou une autre page de votre choix
+    }
+
+    // Créer le formulaire pour changer le mot de passe
+    $form = $this->createForm(ChangePasswordType::class);
+
+    // Gérer la soumission du formulaire
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $currentPassword = $form->get('currentPassword')->getData();
+        
+        // Vérifier l'ancien mot de passe
+        if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+            $this->addFlash('error', 'L\'ancien mot de passe est incorrect.');
+            return $this->redirectToRoute('change_password');
+        }
+
+        // Changer le mot de passe
+        $newPassword = $form->get('newPassword')->getData();
+        $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
+        $user->setPassword($hashedPassword);
+
+        // Sauvegarder l'utilisateur avec le nouveau mot de passe
+        $this->entityManager->flush();
+
+        // Envoyer un email de confirmation
+        $emailService->sendPasswordChangeConfirmationEmail($user);
+
+        // Afficher un message de succès et rediriger
+        $this->addFlash('success', 'Mot de passe changé avec succès.');
+        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+    }
+
+    // Afficher le formulaire dans la vue
+    return $this->render('user/change_password.html.twig', [
+        'form' => $form->createView(),
+    ]);}
 }

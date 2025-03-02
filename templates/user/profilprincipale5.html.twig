@@ -17,9 +17,10 @@
 
        <!-- Boutons d'action -->
 <div class="d-grid gap-3 col-6 mx-auto">
-    <a href="{{ path('app_edit_profile', {'id': user.id}) }}" class="btn btn-dark">Modifier le profil</a>
+ <a href="{{ path('app_edit_profile', {'id': user.id}) }}" class="btn btn-dark">Modifier le profil</a>
 <a href="{{ path('change_password') }} "class="btn btn-secondary">Réinitialiser le mot de passe</a>
-    <a href="{{ path('app_logout') }}" class="btn btn-gray">Se déconnecter</a>
+
+ <a href="{{ path('app_logout') }}" class="btn btn-gray">Se déconnecter</a>
 
 <a href="{{ path('app_archive_user' , {'id': user.id}) }}"class="btn btn-white-outline">Archiver le profil</a>
 </form>

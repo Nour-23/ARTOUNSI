@@ -30,7 +30,10 @@ services:
             - { name: 'kernel.event_listener', event: 'security.interactive_login' , priority: 10}
 # config/services.yaml
 
-
+    App\Service\EmailService:
+        arguments:
+            $mailer: '@mailer'
+            $router: '@router'
 
     # Enregistrement automatique des services dans src/
     App\Controller\:
