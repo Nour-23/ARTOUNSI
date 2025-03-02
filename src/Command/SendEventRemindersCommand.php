@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
+#[AsCommand(name: 'app:send-event-reminders', description: 'Sends email reminders to participants for upcoming events.')]
 class SendEventRemindersCommand extends Command
 {
     protected static $defaultName = 'app:send-event-reminders';
@@ -27,7 +28,8 @@ class SendEventRemindersCommand extends Command
 
     public function __construct(EventRepository $eventRepository, ParticipantRepository $participantRepository, MailerInterface $mailer)
     {
-        parent::__construct();
+        parent::__construct(self::$defaultName);
+
         $this->eventRepository = $eventRepository;
         $this->participantRepository = $participantRepository;
         $this->mailer = $mailer;
