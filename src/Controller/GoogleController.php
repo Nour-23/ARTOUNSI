@@ -30,5 +30,5 @@ class GoogleController extends AbstractController
         if (!$this->getUser()){
 return new JsonResponse(array('status' => false, 'message' => "User not found!"));
 } else {
-    return $this->redirectToRoute('app_profile', ['id' => $user->getId()]);
+    return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
 }}}

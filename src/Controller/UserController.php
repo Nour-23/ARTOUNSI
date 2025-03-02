@@ -19,7 +19,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 
@@ -45,15 +47,16 @@ private $passwordEncoder;
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, MailerInterface $mailer): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier si l'email existe déjà
             $userExist = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-
+    
             if ($userExist) {
                 if ($userExist->isArchived()) {
                     $this->addFlash('error', 'Ce compte est archivé et ne peut pas être réinscrit.');
@@ -63,8 +66,10 @@ private $passwordEncoder;
                     return $this->redirectToRoute('app_login');
                 }
             }
-            $user->setRoles(['ROLE_CLIENT']); 
-
+    
+            $user->setRoles(['ROLE_CLIENT']);
+    
+            // Traitement de la photo
             $photo = $form->get('photo')->getData();
             if ($photo) {
                 try {
@@ -78,23 +83,63 @@ private $passwordEncoder;
             } else {
                 $user->setPhoto(null);
             }
-
+    
+            // Hacher le mot de passe
             $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
             $user->setPassword($hashedPassword);
+    
+            // Générer un jeton de confirmation
+            $token = bin2hex(random_bytes(32));  // Générer un jeton sécurisé
+            $user->setVerificationToken($token); // Assurez-vous que vous avez ajouté ce champ dans votre entité User
+    
             $this->entityManager->persist($user);
             $this->entityManager->flush();
+    
+            // Envoyer l'email de confirmation
+          // Envoi de l'email de confirmation avec le lien de confirmation
+// Envoi de l'email de confirmation avec le lien de confirmation
+$email = (new TemplatedEmail())
+    ->from('noreply@yourdomain.com')  // L'email de votre serveur
+    ->to($user->getEmail())
+    ->subject('Confirmez votre email')
+    ->htmlTemplate('user/confirmation_email.html.twig')  // Créez un template pour l'email de confirmation
+    ->context([
+        'confirmationToken' => $token,  // Utiliser le jeton de confirmation
+        'user' => $user,
+        'link' => $this->generateUrl('app_confirm_email', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL),  // Générer l'URL absolue
+    ]);
 
-            return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+$mailer->send($email);
+
+
+    
+            // Redirection vers la page de profil ou la page d'accueil
+            return $this->redirectToRoute('app_login');
         }
-        $userExist = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-
-
-
-
+    
         return $this->render('user/register.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/confirm_email/{token}', name: 'app_confirm_email')]
+    public function confirmEmail(string $token): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['confirmationToken' => $token]);
+    
+        if ($user) {
+            // Vérifier que le jeton est valide et confirmer l'email
+            $user->setIsVerified(true);
+            $user->setVerificationToken(null); // Supprimer le jeton après confirmation
+            $this->entityManager->flush();
+    
+            $this->addFlash('success', 'Votre email a été confirmé avec succès.');
+            return $this->redirectToRoute('app_login');
+        }
+    
+        $this->addFlash('error', 'Le lien de confirmation est invalide ou expiré.');
+        return $this->redirectToRoute('app_register');
+    }
+        
     #[Route('/login', name: 'app_login')]
     public function login(
         Request $request, 
@@ -183,7 +228,7 @@ private $passwordEncoder;
         }
 
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return $this->redirectToRoute('admin_dashboard');
+            return $this->redirectToRoute('admin_stats');
         }
 
         return $this->redirectToRoute('app_profile_principale',  ['id' => $user->getId()]);
@@ -404,8 +449,7 @@ public function editPassword(
     ]);
 }
 
-#[Route('/admin/stats', name: 'admin_stats')]
-public function index(UserRepository $userRepository, EntityManagerInterface $em)
+#[Route('/admin/stats', name: 'admin_stats')]public function index(UserRepository $userRepository, EntityManagerInterface $em)
 {
     // Récupérer tous les utilisateurs
     $users = $userRepository->findAll();
@@ -449,7 +493,6 @@ public function index(UserRepository $userRepository, EntityManagerInterface $em
             $em->persist($user);
         }
     }
-    
     $em->flush();
 
     // Calculer la moyenne des connexions

@@ -36,6 +36,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: "Le C.I.N est obligatoire.")]
     #[Assert\Regex(pattern: "/^\d{8}$/", message: "Le C.I.N doit contenir exactement 8 chiffres.")]
     private ?string $cin = null;
+
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $verificationCode = null;
+
+    #[ORM\Column(type: "boolean")]
+    private bool $isVerified = false;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private $verificationToken;
+
+    // ... getters et setters pour verificationToken
+
+    public function getVerificationToken(): ?string
+    {
+        return $this->verificationToken;
+    }
+
+    public function setVerificationToken(?string $verificationToken): self
+    {
+        $this->verificationToken = $verificationToken;
+
+        return $this;
+    }
+
+    public function getVerificationCode(): ?string
+    {
+        return $this->verificationCode;
+    }
+
+    public function setVerificationCode(?string $verificationCode): self
+    {
+        $this->verificationCode = $verificationCode;
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+    
     #[ORM\Column(type: 'boolean')]
     private bool $archived = false;
     

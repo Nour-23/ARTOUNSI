@@ -44,18 +44,20 @@
 					</ul>
 
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-  {% if app.user %}
+{% if app.user %}
     <li>
         <a class="nav-link" href="{{ path('app_profile_principale', {'id': app.user.id}) }}">
-Profile
+            Profile
         </a>
     </li>
 {% else %}
     <li>
         <a class="nav-link" href="{{ path('app_login') }}">
-PROFILE        </a>
+            Login
+        </a>
     </li>
 {% endif %}
+
 
 				   
 				   

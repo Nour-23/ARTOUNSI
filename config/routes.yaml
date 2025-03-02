@@ -32,4 +32,8 @@ admin_dashboard:
 app_profile_admin:
     path: /profile/admin/
     controller: App\Controller\UserController::profilAdmin
-    
+# config/routes.yaml
+connect_google_check:
+    path: /connect/google/check
+    controller: App\Controller\GoogleController::check
+

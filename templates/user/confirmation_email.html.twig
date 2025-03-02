@@ -1,0 +1,7 @@
+<p>Bonjour {{ user.name }},</p>
+<p>Veuillez confirmer votre adresse email en cliquant sur le lien ci-dessous :</p>
+
+<!-- Si vous avez besoin d'utiliser la variable signedUrl -->
+<p>Voici Ton compte :  
+    <a href="{{ absolute_url(path('app_profile_principale', {'id': user.id}) ) }}" class="btn btn-primary">Ton compte</a>
+</p>
