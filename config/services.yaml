@@ -11,6 +11,20 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+        # Mailer Service Configuration
+    Symfony\Component\Mailer\MailerInterface:
+        alias: mailer
+
+
+
+    # Register the SendEventRemindersCommand explicitly as a command
+    App\Command\SendEventRemindersCommand:
+        tags:
+            - { name: 'console.command' }
+
+
+
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
