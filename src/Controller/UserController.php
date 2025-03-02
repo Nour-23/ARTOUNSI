@@ -404,7 +404,8 @@ public function editPassword(
     ]);
 }
 
-#[Route('/admin/stats', name: 'admin_stats')]public function index(UserRepository $userRepository, EntityManagerInterface $em)
+#[Route('/admin/stats', name: 'admin_stats')]
+public function index(UserRepository $userRepository, EntityManagerInterface $em)
 {
     // Récupérer tous les utilisateurs
     $users = $userRepository->findAll();
@@ -448,6 +449,7 @@ public function editPassword(
             $em->persist($user);
         }
     }
+    
     $em->flush();
 
     // Calculer la moyenne des connexions
