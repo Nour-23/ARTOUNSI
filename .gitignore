@@ -26,6 +26,8 @@
 ###< symfony/asset-mapper ###
 
 /src/Security
+/node_modules
+/public
 
 <<<<<<< HEAD
 /public/uploads/
