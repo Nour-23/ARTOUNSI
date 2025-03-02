@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class PasswordChangeProfileType extends AbstractType
 {
@@ -44,6 +45,10 @@ class PasswordChangeProfileType extends AbstractType
                     ]),
                 ],
                 'mapped' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'Changer le mot de passe',
             ]);
     }
+   
 }

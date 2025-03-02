@@ -136,14 +136,17 @@ private $passwordEncoder;
                 return $this->redirectToRoute('app_forgot_password_request');
             }
     
-            // Vérifier si l'utilisateur est archivé
-           
-    
             // Vérification du mot de passe
             if (!password_verify($password, $user->getPassword())) {
                 $this->addFlash('error', 'Mot de passe incorrect.');
                 return $this->redirectToRoute('app_login');
             }
+    
+            // Incrémenter le compteur de connexions
+            $user->setLoginCount($user->getLoginCount() + 1);
+    
+            // Sauvegarder les changements dans la base de données
+            $this->entityManager->flush();  // Utiliser l'EntityManager injecté
     
             // ✅ Redirection selon le rôle
             if (in_array('ROLE_ADMIN', $user->getRoles())) {
@@ -158,6 +161,7 @@ private $passwordEncoder;
             'error' => $error,
         ]);
     }
+    
     
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
@@ -397,6 +401,136 @@ public function editPassword(
     return $this->render('user/change.html.twig', [
         'form' => $form->createView(),
         'progress' => $progress,  // Transmettre l'avancement à la vue
+    ]);
+}
+
+#[Route('/admin/stats', name: 'admin_stats')]public function index(UserRepository $userRepository, EntityManagerInterface $em)
+{
+    // Récupérer tous les utilisateurs
+    $users = $userRepository->findAll();
+
+    // Vérifier s'il y a des utilisateurs
+    if (empty($users)) {
+        return $this->render('admin/stats.html.twig', [
+            'users' => $users,
+            'totalConnections' => 0,
+            'userWithMaxLogin' => null,
+            'userWithMinLogin' => null,
+            'averageLoginCount' => 0,
+        ]);
+    }
+
+    // Calculer le total des connexions
+    $totalConnections = array_sum(array_map(function ($user) {
+        return $user ? $user->getLoginCount() : 0;
+    }, $users));
+
+    // Utilisateur avec le plus de connexions
+    $userWithMaxLogin = array_reduce($users, function ($maxUser, $user) {
+        if ($user && (!$maxUser || $user->getLoginCount() > $maxUser->getLoginCount())) {
+            return $user;
+        }
+        return $maxUser;
+    });
+
+    // Utilisateur avec le moins de connexions
+    $userWithMinLogin = array_reduce($users, function ($minUser, $user) {
+        if ($user && (!$minUser || $user->getLoginCount() < $minUser->getLoginCount())) {
+            return $user;
+        }
+        return $minUser;
+    });
+
+    // Archivage des utilisateurs avec 0 ou 1 connexion
+    foreach ($users as $user) {
+        if ($user->getLoginCount() <= 1) {
+            $user->setArchived(true);
+            $em->persist($user);
+        }
+    }
+    $em->flush();
+
+    // Calculer la moyenne des connexions
+    $averageLoginCount = count($users) > 0 ? $totalConnections / count($users) : 0;
+
+    return $this->render('admin/stats.html.twig', [
+        'users' => $users,
+        'totalConnections' => $totalConnections,
+        'userWithMaxLogin' => $userWithMaxLogin,
+        'userWithMinLogin' => $userWithMinLogin,
+        'averageLoginCount' => $averageLoginCount,
+    ]);
+}
+
+public function incrementLoginCount(EntityManagerInterface $em): Response
+{
+    // Récupérer un utilisateur, par exemple l'utilisateur avec id=1
+    $user = $em->getRepository(User::class)->find(1);
+
+    if ($user) {
+        // Incrémenter manuellement le compteur de connexions
+        $user->setLoginCount($user->getLoginCount() + 1);
+        $em->persist($user);
+        $em->flush();
+
+        return new Response('Login count incremented to: ' . $user->getLoginCount());
+    }
+
+    return new Response('User not found');
+}
+// Contrôleur pour désarchiver un utilisateur
+#[Route('/unarchive-user/{id}', name: 'unarchive_user')]
+public function unarchiveUser(User $user, EntityManagerInterface $em): Response
+{
+    // Vérifier que l'utilisateur existe et est archivé
+    if (!$user || !$user->isArchived()) {
+        $this->addFlash('error', 'Cet utilisateur n\'est pas archivé.');
+        return $this->redirectToRoute('admin_users');
+    }
+
+    // Désarchiver l'utilisateur
+    $user->setArchived(false); // Désarchiver
+    $em->persist($user);
+    $em->flush();
+
+    // Message de succès et redirection
+    $this->addFlash('success', 'L\'utilisateur a été désarchivé avec succès.');
+    return $this->redirectToRoute('admin_users'); // Rediriger après l'action
+}
+
+#[Route('/user/inactive/{id}', name: 'inactive_user')]
+public function setInactive(User $user, EntityManagerInterface $em): Response
+{
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        $this->addFlash('error', 'Utilisateur introuvable.');
+        return $this->redirectToRoute('admin_users');
+    }
+
+    // Marquer l'utilisateur comme inactif
+    $user->setIsActive(false); // Mettre l'utilisateur en inactif
+    $em->persist($user);
+    $em->flush();
+
+    // Message de succès et redirection
+    $this->addFlash('success', 'L\'utilisateur a été marqué comme inactif.');
+    return $this->redirectToRoute('admin_user_stats'); // Rediriger vers les stats
+}
+
+#[Route('/profile/admin', name: 'app_profile_admin')]
+public function profilAdmin(Security $security): Response
+{
+    // Récupérer l'utilisateur actuellement connecté
+    $user = $security->getUser();
+
+    // Vérifier si l'utilisateur est bien connecté
+    if (!$user) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+    }
+
+    // Passer l'utilisateur à la vue
+    return $this->render('user/profiladmin.html.twig', [
+        'user' => $user
     ]);
 }
 

@@ -3,33 +3,118 @@
 {% block title %}Liste des utilisateurs{% endblock %}
 
 {% block body %}
-    <h1 style="text-align: center; margin-bottom: 20px;">Liste des utilisateurs</h1>
-    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr style="background-color: #f2f2f2;">
-                <th style="padding: 10px; border: 1px solid #ddd;">ID</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Nom</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Email</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Rôle</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Archivé</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-                    <tr style="border-bottom: 1px solid #ddd;">
-                        <td style="padding: 10px;">{{ user.id }}</td>
-                        <td style="padding: 10px;">{{ user.name }}</td>
-                        <td style="padding: 10px;">{{ user.email }}</td>
-                        <td style="padding: 10px;">{{ user.roles | join(', ') }}</td>
-                        <td style="padding: 10px; text-align: center;">{{ user.archived ? '✅' : '❌' }}</td>
-                        <td style="padding: 10px;">
-                            <a href="{{ path('admin_profile', { id: user.id }) }}" style="margin-right: 10px; text-decoration: none; color: #007BFF;">👁 Voir</a>
-                            <a href="{{ path('admin_archive_user', { id: user.id }) }}" onclick="return confirm('Voulez-vous vraiment archiver cet utilisateur ?');" style="margin-right: 10px; text-decoration: none; color: #DC3545;">🗄 Archiver</a>
-                            <a href="{{ path('admin_edit_profil', { id: user.id }) }}" style="text-decoration: none; color: #28A745;">✏ Modifier</a>
+    <h1 style="text-align: center; margin-bottom: 20px; font-family: 'Arial', sans-serif; font-size: 2.5rem; color: #0074A6; font-weight: 700;">Liste des utilisateurs</h1>
+    
+    <div class="table-responsive">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Arial', sans-serif;">
+            <thead>
+                <tr style="background: linear-gradient(135deg, #0074A6, #32B3DC); color: white;">
+                    <th style="padding: 15px; border: 1px solid #ddd;">ID</th>
+                    <th style="padding: 15px; border: 1px solid #ddd;">Nom</th>
+                    <th style="padding: 15px; border: 1px solid #ddd;">Email</th>
+                    <th style="padding: 15px; border: 1px solid #ddd;">Rôle</th>
+                    <th style="padding: 15px; border: 1px solid #ddd;">Archivé</th>
+                    <th style="padding: 15px; border: 1px solid #ddd;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #f9f9f9; transition: all 0.3s ease;">
+                        <td style="padding: 15px; font-size: 1rem; color: #333;">{{ user.id }}</td>
+                        <td style="padding: 15px; font-size: 1rem; color: #333;">{{ user.name }}</td>
+                        <td style="padding: 15px; font-size: 1rem; color: #333;">{{ user.email }}</td>
+                        <td style="padding: 15px; font-size: 1rem; color: #333;">{{ user.roles | join(', ') }}</td>
+                        <td style="padding: 15px; text-align: center; color: #333;">
+                            <span style="font-size: 1.2rem; color: {{ user.archived ? '#28A745' : '#DC3545' }};">{{ user.archived ? '✅' : '❌' }}</span>
+                        </td>
+                        <td style="padding: 15px; text-align: center;">
+                            <a href="{{ path('admin_profile', { id: user.id }) }}" 
+                               style="margin-right: 15px; text-decoration: none; color: #007BFF; font-size: 1.1rem; transition: all 0.3s;">
+                               👁 Voir
+                            </a>
+                            <a href="{{ path('admin_archive_user', { id: user.id }) }}" 
+                               onclick="return confirm('Voulez-vous vraiment archiver cet utilisateur ?');" 
+                               style="margin-right: 15px; text-decoration: none; color: #DC3545; font-size: 1.1rem; transition: all 0.3s;">
+                               🗄 Archiver
+                            </a>
+                            <a href="{{ path('admin_edit_profil', { id: user.id }) }}" 
+                               style="text-decoration: none; color: #28A745; font-size: 1.1rem; transition: all 0.3s;">
+                               ✏ Modifier
+                            </a>
                         </td>
                     </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <style>
+        /* Design de la table */
+        table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1rem;
+            padding: 12px;
+            color: #333;
+        }
+
+        /* Effet hover pour chaque ligne */
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Animation des liens d'action */
+        a {
+            font-size: 1.1rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        a:hover {
+            transform: scale(1.05);
+        }
+
+        a:active {
+            transform: scale(1);
+        }
+
+        /* Effet de survol pour les actions */
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Fond de l'en-tête */
+        thead {
+            background: linear-gradient(135deg, #0074A6, #32B3DC);
+            color: white;
+        }
+
+        /* En-têtes de colonnes */
+        th {
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        /* Ajustement des icônes */
+        .actions a {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* Ligne pour les utilisateurs archiver et non archiver */
+        td span {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+    </style>
+
 {% endblock %}

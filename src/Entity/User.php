@@ -49,6 +49,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->archived = $archived;
         return $this;
     }
+    // Dans votre entité User
+#[ORM\Column(type: 'boolean')]
+ 
+private $isActive = true;
+public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
     
     #[ORM\Column(length: 8)]
     #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
@@ -76,6 +91,7 @@ private ?\DateTimeImmutable $dateNaissance = null;
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $tokenExpiry = null;
 
+    
     public function getResetToken(): ?string
     {
         return $this->resetToken;
@@ -97,6 +113,12 @@ private ?\DateTimeImmutable $dateNaissance = null;
         $this->tokenExpiry = $tokenExpiry;
         return $this;
     }
+    // Méthode pour vérifier si le token est expiré
+public function isTokenExpired(): bool
+{
+    return $this->tokenExpiry !== null && $this->tokenExpiry < new \DateTimeImmutable();
+}
+
     
 
     #[ORM\Column(length: 255)]
@@ -121,6 +143,19 @@ private ?string $photo = null;
 
     // GETTERS & SETTERS
 
+    #[ORM\Column(type: 'integer')]
+    private int $loginCount = 0; // Initialisé à 0
+
+    public function getLoginCount(): int
+    {
+        return $this->loginCount;
+    }
+    public function setLoginCount(int $loginCount): self
+    {
+        $this->loginCount = $loginCount;
+        return $this;
+    }
+   
     public function getId(): ?int
     {
         return $this->id;
@@ -234,6 +269,7 @@ private ?string $photo = null;
 
         return array_unique($this->roles);
     }
+
 
     public function setRoles(array $roles): static
 {

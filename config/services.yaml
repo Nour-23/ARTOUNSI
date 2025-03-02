@@ -1,4 +1,3 @@
-
 parameters:
     google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
 
@@ -13,7 +12,7 @@ parameters:
 services:
     # Configuration par défaut pour les services dans ce fichier
     _defaults:
-        autowire: true      # Injection automatique des dépendances.
+        autowire: true      # Injection automatique des dépendances
         autoconfigure: true # Enregistrement automatique des services comme commandes, événements, etc.
         
     # Enregistrement des contrôleurs (si vous avez des contrôleurs spécifiques)
@@ -21,15 +20,22 @@ services:
         tags:
             - { name: 'kernel.event_subscriber' }
 
-    # Les classes dans src/ disponibles en tant que services
-# Enregistrement automatique des services (commandes, événements, etc.)
+    # Enregistrement des écouteurs d'événements
+    App\EventListener\LoginListener:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'  # Injection de l'EntityManager
+            $logger: '@logger'  # Injection du Logger
+        tags:
+      
+            - { name: 'kernel.event_listener', event: 'security.interactive_login' , priority: 10}
+# config/services.yaml
 
-    # Enregistrement des contrôleurs
+
+
+    # Enregistrement automatique des services dans src/
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
-
-
 
     # Rendre les classes de src/ disponibles en tant que services
     App\:
@@ -38,6 +44,8 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    # Enregistrement du service FileUploader
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads/photos'

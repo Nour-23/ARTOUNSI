@@ -29,4 +29,7 @@ app_edit_principale:
 admin_dashboard:
     path: /admin
     controller: App\Controller\UserController::listUsers
+app_profile_admin:
+    path: /profile/admin/
+    controller: App\Controller\UserController::profilAdmin
     
