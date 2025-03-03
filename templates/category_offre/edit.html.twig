@@ -1,0 +1,13 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Edit CategoryOffre{% endblock %}
+
+{% block body %}
+    <h1>Edit CategoryOffre</h1>
+
+    {{ include('category_offre/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_category_offre_index') }}">back to list</a>
+
+    {{ include('category_offre/_delete_form.html.twig') }}
+{% endblock %}

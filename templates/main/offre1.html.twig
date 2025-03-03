@@ -1,0 +1,47 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Create New Offre{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="card shadow-lg border-0 rounded-4 p-5" style="background-color: white;">
+        
+            <h2 class="text-center mb-5" style="font-size: 2.5rem; font-weight: bold; color: black;">Create New Offre</h2>
+
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+
+            <div class="form-group mb-4">
+                {{ form_label(form.title, null, {'attr': {'class': 'form-label', 'style': 'font-size: 1.5rem; color: black;'}}) }}
+                {{ form_widget(form.title, {'attr': {'class': 'form-control', 'style': 'font-size: 1.5rem; padding: 1rem;'}}) }}
+               <div class="text-danger">{{ form_errors(form.title) }}</div>
+            </div>
+
+            <div class="form-group mb-4">
+                {{ form_label(form.category, null, {'attr': {'class': 'form-label', 'style': 'font-size: 1.5rem; color: black;'}}) }}
+                {{ form_widget(form.category, {'attr': {'class': 'form-control', 'style': 'font-size: 1.5rem; padding: 1rem;'}}) }}
+           <div class="text-danger">{{ form_errors(form.category) }}</div>
+            </div>
+
+            <div class="form-group mb-4">
+                {{ form_label(form.status, null, {'attr': {'class': 'form-label', 'style': 'font-size: 1.5rem; color: black;'}}) }}
+                {{ form_widget(form.status, {'attr': {'class': 'form-control', 'style': 'font-size: 1.5rem; padding: 1rem;'}}) }}
+                <div class="text-danger">{{ form_errors(form.status) }}</div>
+            </div>
+            <div class="form-group mb-4">
+    {{ form_label(form.description, null, {'attr': {'class': 'form-label', 'style': 'font-size: 1.5rem; color: black;'}}) }}
+    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'style': 'font-size: 1.5rem; padding: 1rem;'}}) }}
+    <div class="text-danger">{{ form_errors(form.description) }}</div>
+</div>
+
+            {# <div class="text-center">
+                <button type="submit" class="btn btn-primary" style="font-size: 1.5rem; padding: 0.8rem 2rem;">
+                    Submit
+                </button>
+            
+            </div> #}
+            
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
