@@ -22,7 +22,7 @@ class EmailService
     public function sendPasswordResetEmail($user, $resetToken): void
     {
         $email = (new TemplatedEmail())
-            ->from(new Address('no-reply@yourdomain.com', 'No Reply'))
+            ->from(new Address('arttounsi@art.com', 'No Reply'))
             ->to((string) $user->getEmail())
             ->subject('Your password reset request')
             ->htmlTemplate('reset_password/email.html.twig')

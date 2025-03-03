@@ -1,5 +1,6 @@
 <?php 
 namespace App\Controller;
+use App\Service\QrCodeGenerator;
 use App\Service\EmailService;
 use App\Form\ChangePasswordType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -276,10 +277,12 @@ $mailer->send($email);
         ]);
     }
     #[Route('/profile/principale/{id}', name: 'app_profile_principale')]
-    public function profilePrincipale(int $id, UserRepository $userRepository): Response
+    public function profilePrincipale(int $id, UserRepository $userRepository, QrCodeGenerator $qrCodeGenerator): Response
     {
         // Récupérer l'utilisateur par son ID
         $user = $userRepository->find($id);
+        $qrCodeResult = $qrCodeGenerator->createQrCode( $user);
+
     
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
@@ -287,7 +290,9 @@ $mailer->send($email);
     
         // Passer l'utilisateur à la vue
         return $this->render('user/profilprincipale.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'qrCodeResult' => $qrCodeResult,
+
         ]);
     }
 
