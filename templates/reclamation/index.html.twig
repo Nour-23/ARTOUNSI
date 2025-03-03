@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base2.html.twig' %}
 
 {% block title %}Reclamation Index{% endblock %}
 
@@ -6,6 +6,79 @@
     <div class="container mt-4">
         <h1 class="text-center mb-4">Reclamation Index</h1>
 
+        <div class="container">
+      <div class="row justify-content-start">
+        <div class="col-auto">
+                <div class="input-group">
+             <input type="search" class="form-control" placeholder="Search Reclamation" aria-controls="DataTables_Table_0" id="reclamation_search">
+    <!-- Bouton pour démarrer la recherche vocale -->
+     
+            <button class="btn" type="button" style="background-color: transparent; border: none;" onclick="startSpeechRecognition()">
+                <img src="{{ asset('../assets/micro.png') }}" alt="Microphone" style="width: 30px; height: 30px;"> <!-- Image du microphone -->
+            </button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Fonction pour effectuer la recherche dynamique
+    function searchReclamation(keyword) {
+        var tableRows = document.querySelectorAll('.table tbody tr');
+        var searchInput = keyword.trim().toLowerCase();
+
+        tableRows.forEach(function (row) {
+            var cells = row.querySelectorAll('td');
+            var found = false;
+
+            cells.forEach(function (cell) {
+                if (cell.textContent.trim().toLowerCase().includes(searchInput)) {
+                    found = true;
+                }
+            });
+
+            if (found) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Fonction pour démarrer la reconnaissance vocale
+    function startSpeechRecognition() {
+        // Démarrer la reconnaissance vocale
+        const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+        recognition.lang = 'fr-FR'; // Définir la langue de la reconnaissance vocale (facultatif)
+        recognition.start();
+
+        // Écouter les résultats de la reconnaissance vocale
+        recognition.onresult = function(event) {
+            const recognizedText = event.results[0][0].transcript.trim(); // Récupérer le texte reconnu
+            const cleanedText = recognizedText.endsWith('.') ? recognizedText.slice(0, -1) : recognizedText; // Supprimer le dernier caractère s'il s'agit d'un point
+            document.getElementById('reclamation_search').value = cleanedText; // Afficher le résultat dans le champ de recherche
+
+            // Appel de la fonction de recherche lorsque du texte est reconnu
+            searchReclamation(cleanedText); 
+        };
+
+        // Gérer les erreurs éventuelles de la reconnaissance vocale
+        recognition.onerror = function(event) {
+            console.error('Erreur de reconnaissance vocale:', event.error);
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Event listener pour la saisie clavier
+        var searchInput = document.getElementById('reclamation_search');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function () {
+                var searchText = this.value;
+                searchReclamation(searchText);
+            });
+        }
+    });
+</script>
+</div>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover text-center align-middle shadow-lg">
                 <thead class="table-dark">
@@ -55,7 +128,13 @@
                 <i class="fas fa-plus"></i> Create New Reclamation
             </a>
         </div>
+        
     </div>
+    <div class="text-center mb-4">
+            <a href="{{ path('app_reclamation_export') }}" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </a>
+        </div>
 
     <style>
         .table {
