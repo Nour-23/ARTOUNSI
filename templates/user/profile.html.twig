@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ user.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h2 class="text-center mb-5">Profil de {{ user.name }}</h2>
+
+        <!-- Section Photo de Profil -->
+        <div class="profile-photo text-center mb-4">
+            {% if user.photo %}
+                <!-- Cadre autour de la photo de l'utilisateur -->
+                <div class="photo-frame rounded-circle overflow-hidden">
+                    <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid" />
+                </div>
+            {% else %}
+                <!-- Cadre autour de la photo par défaut -->
+                <div class="photo-frame rounded-circle overflow-hidden">
+                    <img src="{{ asset('images/default-profile.jpg') }}" alt="Photo de profil par défaut" class="img-fluid" />
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Informations Utilisateur -->
+        <div class="profile-info mb-4">
+        
+            <p><strong>Email :</strong> {{ user.email }}</p>
+            <p><strong>CIN :</strong> {{ user.cin }}</p>
+            <p><strong>Téléphone :</strong> {{ user.numtel }}</p>
+            <p><strong>Adresse :</strong> {{ user.adresse }}</p>
+            <p><strong>Date de naissance :</strong> {{ user.dateNaissance|date('d/m/Y') }}</p>
+            <p><strong>Rôle :</strong> {{ user.role }}</p>
+        </div>
+
+        <!-- Boutons -->
+        <div class="text-center">
+            <a href="{{ path('app_edit_profile', {id: user.id}) }}" class="btn btn-primary mx-2">Modifier mon profil</a>
+            <a href="{{ path('app_profile_principale', {id: user.id}) }}" class="btn btn-gray mx-2">Retour vers mon profil principal</a>
+        </div>
+    </div>
+{% endblock %}

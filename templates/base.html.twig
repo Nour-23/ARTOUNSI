@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>     {% block title %}  {% endblock %}       Symfony </title>
+          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <!-- Bootstrap CSS -->
+		<link href= "{{asset('css/bootstrap.min.css')}}" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+		<link href="{{asset('css/tiny-slider.css')}}" rel="stylesheet">
+		<link href="{{asset('css/style.css')}}" rel="stylesheet">
+        {% block stylesheets %}
+        {% endblock %}
+
+      
+    </head>
+    <body>
+      	<!-- Start Header/Navigation -->
+		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+
+			<div class="container">
+				<a class="navbar-brand" href="index.html">ARTOUNSI<span>.</span></a>
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarsFurni">
+					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+						<li class="nav-item active">
+							<a class="nav-link" href="index.html">Home</a>
+						</li>
+						<li><a class="nav-link" href="{{ path('app_formation_indexfront')}}"">Formation</a></li>
+
+
+						<li><a class="nav-link" href="services.html">Service</a></li>
+                        <li><a class="nav-link" href="{{ path('asma')}}">Offre</a></li>
+						<li><a class="nav-link" href="{{ path('app_article_indexfront')}}">Article</a></li>
+						<li><a class="nav-link" href="blog.html">Evenement</a></li>
+						<li><a class="nav-link" href="contact.html">Reclamation</a></li>
+	  
+					</ul>
+
+					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+  {% if app.user %}
+    <li>
+        <a class="nav-link" href="{{ path('app_profile_principale', {'id': app.user.id}) }}">
+
+        </a>
+    </li>
+{% else %}
+    <li>
+        <a class="nav-link" href="{{ path('app_login') }}">
+PROFILE        </a>
+    </li>
+{% endif %}
+
+				   
+				   
+					</ul>
+				</div>
+			</div>
+				
+		</nav>
+		{% if app.user and 'ROLE_ADMIN' in app.user.roles %}
+    <a href="{{ path('admin_dashboard') }}">Backoffice</a>
+{% endif %}
+
+		<!-- End Header/Navigation -->
+
+        {% block body %}{% endblock %}
+        <script src="{{asset('js/bootstrap.bundle.min.js')}}"></script>
+		<script src="{{asset('js/tiny-slider.js')}}"></script>
+		<script src="{{asset('js/custom.js')}}"></script>
+      {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    
+    
+    </body>
+</html>

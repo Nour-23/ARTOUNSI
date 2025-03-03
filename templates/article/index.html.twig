@@ -1,0 +1,146 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center my-4">Liste des articles</h1>
+    
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <input type="text" id="article-search" class="form-control me-2 mb-2" placeholder="Rechercher par nom, description ou catégorie" style="flex: 1 1 300px;">
+           <!-- Bouton tri -->
+        <select id="prix-order" class="form-select mb-2" style="max-width: 220px;">
+            <option value="asc">Prix : Croissant</option>
+            <option value="desc">Prix : Décroissant</option>
+        </select>
+    </div>
+    <!-- Bouton pour consulter les catégories -->
+    <div class="text-center mb-4">
+        <a href="{{ path('app_categorie_index') }}" class="btn btn-info">Consulter les catégories</a>
+    </div>
+    <div class="text-center mt-4">
+        <a href="{{ path('app_article_new') }}" class="btn btn-success">Créer un nouvel article</a>
+    </div>
+    
+    <div class="row" id="articles-container">
+        {% for article in articles %}
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-img-top text-center p-3">
+                        {% if article.image %}
+                            <img src="{{ asset('uploads/images/' ~ article.image) }}" alt="{{ article.nom }}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="{{ asset('images/default-image.png') }}" alt="Image par défaut" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ article.nom }}</h5>
+                        <p class="card-text text-truncate">{{ article.description }}</p>
+                        <p><strong>Prix :</strong> {{ article.prix }} TND</p>
+                        <p><strong>Catégorie :</strong> {{ article.categorie.nom }}</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_article_show', {'id': article.id}) }}" class="btn btn-sm btn-primary">Détails</a>
+                            <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="alert alert-warning">Pas d'articles disponibles !</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for i in 1..totalPages %}
+                <li class="page-item {% if i == currentPage %}active{% endif %}">
+                    <a class="page-link" href="{{ path('app_article_index', {'page': i}) }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const searchInput = document.getElementById('article-search');
+    const orderSelect = document.getElementById('prix-order');
+    const container = document.getElementById('articles-container');
+
+    // Handle search input
+    searchInput.addEventListener('input', function() {
+        const query = this.value;
+        fetch("{{ path('app_article_search') }}?query=" + encodeURIComponent(query))
+            .then(response => response.json())
+            .then(data => {
+                container.innerHTML = "";
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center"><p class="alert alert-warning">Pas d\'articles disponibles !</p></div>';
+                    return;
+                }
+                data.forEach(article => {
+                    container.innerHTML += `
+                    <div class="col-12 col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-img-top text-center p-3">
+                                ${ article.image ? `<img src="/uploads/images/${article.image}" alt="${article.nom}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">`
+                                                 : `<img src="/images/default-image.png" alt="Image par défaut" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">` }
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">${article.nom}</h5>
+                                <p class="card-text text-truncate">${article.description}</p>
+                                <p><strong>Prix :</strong> ${article.prix} TND</p>
+                                <p><strong>Catégorie :</strong> ${article.categorie}</p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="/article/${article.id}" class="btn btn-sm btn-primary">Détails</a>
+                                    <a href="/article/${article.id}/edit" class="btn btn-sm btn-warning">Modifier</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                });
+            });
+    });
+
+    // Handle filter change
+    orderSelect.addEventListener('change', function() {
+        const order = this.value;
+        fetch("{{ path('app_article_filter') }}?order=" + encodeURIComponent(order))
+            .then(response => response.json())
+            .then(data => {
+                container.innerHTML = "";
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center"><p class="alert alert-warning">Pas d\'articles disponibles !</p></div>';
+                    return;
+                }
+                data.forEach(article => {
+                    container.innerHTML += `
+                    <div class="col-12 col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-img-top text-center p-3">
+                                ${ article.image ? `<img src="/uploads/images/${article.image}" alt="${article.nom}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">`
+                                                 : `<img src="/images/default-image.png" alt="Image par défaut" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">` }
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">${article.nom}</h5>
+                                <p class="card-text text-truncate">${article.description}</p>
+                                <p><strong>Prix :</strong> ${article.prix} TND</p>
+                                <p><strong>Catégorie :</strong> ${article.categorie}</p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="/article/${article.id}" class="btn btn-sm btn-primary">Détails</a>
+                                    <a href="/article/${article.id}/edit" class="btn btn-sm btn-warning">Modifier</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                });
+            });
+    });
+});
+</script>
+{% endblock %}

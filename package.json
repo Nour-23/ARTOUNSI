@@ -1,0 +1,37 @@
+{
+  "name": "artounsi-utilisateur",
+  "version": "1.0.0",
+  "description": "Projet Symfony ARTOUNSI-utilisateur",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "encore production",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "start": "encore dev --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/stimulus-webpack-helpers": "^1.0.1",
+    "@popperjs/core": "^2.11.8",
+    "@symfony/webpack-encore": "^5.1.0",
+    "autoprefixer": "^10.4.20",
+    "bootstrap": "^5.3.3",
+    "eslint": "^9.21.0",
+    "eslint-webpack-plugin": "^5.0.0",
+    "postcss-loader": "^8.1.1",
+    "sass": "^1.85.1",
+    "sass-loader": "^16.0.5",
+    "webpack-notifier": "^1.15.0"
+  },
+  "dependencies": {
+    "core-js": "^3.40.0",
+    "regenerator-runtime": "^0.14.1"
+  }
+}
