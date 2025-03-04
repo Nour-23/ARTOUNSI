@@ -1,0 +1,61 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Category index{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Category index</h1>
+
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ path('app_category_new') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Create new
+            </a>
+        </div>
+
+        <form method="get" action="{{ path('app_category_index') }}" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search by name" value="{{ search }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        <table class="table table-bordered table-striped shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th>
+                        <a href="{{ path('app_category_index', {search: search, sort: sort == 'asc' ? 'desc' : 'asc'}) }}" class="text-white">
+                            Name
+                            {% if sort == 'asc' %}
+                                <i class="fas fa-sort-up"></i>
+                            {% else %}
+                                <i class="fas fa-sort-down"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>Description</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category.nom }}</td>
+                        <td>{{ category.description }}</td>
+                        <td class="text-center">
+                            <a href="{{ path('app_category_show', {'id': category.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> Show
+                            </a>
+                            <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">No records found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %} 

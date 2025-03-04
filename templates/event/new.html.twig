@@ -1,0 +1,27 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Créer un Événement{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Créer un Nouvel Événement</h1>
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+        <div class="row">
+            <div class="col-12 col-md-8 mx-auto">
+                <div class="card p-4 shadow-sm">
+                    <h3 class="mb-4">Formulaire de création</h3>
+                    {{ form_widget(form) }}
+                    <button type="submit" class="btn btn-primary w-100">Créer</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('event_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

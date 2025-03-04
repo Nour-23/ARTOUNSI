@@ -1,0 +1,44 @@
+{% extends 'back.html.twig' %}
+
+{% block title %} Liste des Événements {% endblock %}
+
+{% block body %}
+<h1>Liste des Événements</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Actions</th> <!-- Action column for buttons -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in events %}
+            <tr>
+                <td>{{ event.title }}</td>
+                <td>{{ event.date|date('d-m-Y') }}</td>
+                <td>{{ event.description }}</td>
+                <td>
+                    <a href="{{ path('event_show', {'id': event.id}) }}" class="btn btn-info">Voir</a>
+
+                    {# Debug output to check participation form #}
+                    <form method="post" action="{{ path('event_participate', {'id': event.id}) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-success">Participer</button>
+                    </form>
+
+                    {# Debugging message to confirm the button rendering #}
+                    {% if app.request.method == 'POST' %}
+                        <div class="alert alert-warning">Form has been submitted for event {{ event.id }}</div>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucun événement disponible.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

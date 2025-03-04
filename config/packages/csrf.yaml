@@ -1,0 +1,6 @@
+# Enable stateless CSRF protection for forms and logins/logouts
+framework:
+    form:
+        csrf_protection:
+            field_name: 'submit'
+            enabled: true

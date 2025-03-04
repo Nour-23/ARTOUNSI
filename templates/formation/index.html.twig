@@ -1,0 +1,63 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Liste des Formations{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Liste des Formations</h1>
+
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ path('app_formation_new') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Ajouter une formation
+            </a>
+        </div>
+
+        <form method="get" action="{{ path('app_formation_index') }}" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Rechercher par nom" value="{{ search }}">
+                <button class="btn btn-primary" type="submit">Rechercher</button>
+            </div>
+        </form>
+
+        <table class="table table-bordered table-striped shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th>
+                        <a href="{{ path('app_formation_index', {search: search, sort: sort == 'asc' ? 'desc' : 'asc'}) }}" class="text-white">
+                            Nom
+                            {% if sort == 'asc' %}
+                                <i class="fas fa-sort-up"></i>
+                            {% else %}
+                                <i class="fas fa-sort-down"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>Description</th>
+                    <th>Date de début</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for formation in formations %}
+                    <tr>
+                        <td>{{ formation.nom }}</td>
+                        <td>{{ formation.description }}</td>
+                        <td>{{ formation.dateDebut ? formation.dateDebut|date('d/m/Y') : 'Non spécifiée' }}</td>
+                        <td class="text-center">
+                            <a href="{{ path('app_formation_show', {'id': formation.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+                            <a href="{{ path('app_formation_edit', {'id': formation.id}) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Aucune formation trouvée.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

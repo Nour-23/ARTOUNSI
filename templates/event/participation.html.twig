@@ -1,0 +1,18 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Liste des Participants{% endblock %}
+
+{% block body %}
+    <h1>Liste des Participants par Événement</h1>
+
+    {% for event in events %}
+        <h2>{{ event.name }}</h2>
+        <ul>
+            {% for participation in eventParticipants[event.id] %}
+                <li>{{ participation.user.name }}</li>
+            {% else %}
+                <li>Aucun participant</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock %}

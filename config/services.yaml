@@ -1,0 +1,74 @@
+parameters:
+    google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+
+    images_directory: '%kernel.project_dir%/public/uploads/images'
+    images_directory_salle: '%kernel.project_dir%/public/uploads/salle'
+    images_directory_activite: '%kernel.project_dir%/public/uploads/activite'
+    images_directory_product: '%kernel.project_dir%/public/uploads/product'
+    images_directory_evenement: '%kernel.project_dir%/public/uploads/evenement'
+    profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile'
+    images_directory_article: '%kernel.project_dir%/public/uploads/article'
+
+services:
+    # Configuration par défaut pour les services dans ce fichier
+    _defaults:
+        autowire: true      # Injection automatique des dépendances
+        autoconfigure: true # Enregistrement automatique des services comme commandes, événements, etc.
+        
+    # Enregistrement des contrôleurs (si vous avez des contrôleurs spécifiques)
+    App\Controller\LogoutEventSubscriberController:
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
+    # Enregistrement des écouteurs d'événements
+    App\EventListener\LoginListener:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'  # Injection de l'EntityManager
+            $logger: '@logger'  # Injection du Logger
+        tags:
+      
+            - { name: 'kernel.event_listener', event: 'security.interactive_login' , priority: 10}
+# config/services.yaml
+
+    App\Service\EmailService:
+        arguments:
+            $mailer: '@mailer'
+            $router: '@router'
+
+    # Enregistrement automatique des services dans src/
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # Rendre les classes de src/ disponibles en tant que services
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Enregistrement du service FileUploader
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%kernel.project_dir%/public/uploads/photos'
+
+    # Enregistrement du GoogleAuthenticator
+    App\Security\GoogleAuthenticator:
+        arguments:
+            $clientRegistry: '@knpu.oauth2.registry'
+            $router: '@router'
+            $em: '@doctrine.orm.entity_manager'
+
+    # Enregistrement du UserRepository
+    App\Repository\UserRepository:
+        autowire: true
+
+        # Mailer Service Configuration
+    Symfony\Component\Mailer\MailerInterface:
+        alias: mailer
+
+    # Register the SendEventRemindersCommand explicitly as a command
+    App\Command\SendEventRemindersCommand:
+        tags:
+            - { name: 'console.command' }

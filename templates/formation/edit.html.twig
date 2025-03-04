@@ -1,0 +1,23 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Modifier la Formation{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Modifier la Formation</h1>
+
+        <div class="card shadow p-4">
+            {{ include('formation/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        </div>
+
+        <div class="mt-3">
+            <a href="{{ path('app_formation_index') }}" class="btn btn-secondary">
+                ⬅ Retour à la liste
+            </a>
+        </div>
+
+        <div class="mt-3">
+            {{ include('formation/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}
