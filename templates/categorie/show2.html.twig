@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catégorie{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center my-4">Détails de la Catégorie</h1>
+
+    <!-- Card pour afficher les informations de la catégorie -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ categorie.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ categorie.nom }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Boutons pour actions avec espacement et taille uniforme -->
+    <div class="d-flex justify-content-between mt-4">
+        <!-- Bouton Retour à la liste -->
+        <a href="{{ path('app_categorie_indexfront') }}" class="btn btn-secondary btn-lg w-25">Retour à la liste</a>
+        
+    </div>
+</div>
+{% endblock %}

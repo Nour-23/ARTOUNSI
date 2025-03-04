@@ -1,0 +1,126 @@
+{% extends 'base3.html.twig' %}
+
+{% block title %}Connexion ARTOUNSI{% endblock %}
+
+{% block body %}
+<section class="background-radial-gradient overflow-hidden">
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+{% endblock %}
+
+
+
+  <div class="container my-5">
+    <div class="row align-items-center justify-content-center">
+      <div class="col-md-5 text-center">
+        <img src="{{ asset('images/logo-artounsi.png') }}" alt="Logo Artounsi" class="logo">
+        <h1 class="my-4 display-5 main-text">
+          <span class="accent-text">مرحبا بيك في Artounsi !</span>
+          <br />
+          <span style="color: #32B3DC;">Bienvenue dans la famille de l'art et de l'artisanat tunisien !</span>
+        </h1>
+      </div>
+      <div class="col-md-6">
+        <div class="card bg-glass">
+<div class="card-body">
+            {{ form_start(form, {'method': 'POST', 'attr': {'novalidate': 'novalidate'}}) }}
+{% for message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+{% endfor %}
+            <div class="mb-3">
+              {{ form_label(form.email) }}
+              {{ form_widget(form.email, {'attr': {'name': '_email'}}) }}
+              {% if form_errors(form.email) is not empty %}
+                <div class="text-danger">
+                  {{ form_errors(form.email) }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3 position-relative">
+              {{ form_label(form.password) }}
+              <div class="input-group">
+                {{ form_widget(form.password, {'attr': {'id': 'password-field'}}) }}
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              {% if form_errors(form.password) is not empty %}
+                <div class="text-danger">
+                    {{ form_errors(form.password) }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="remember-me" checked>
+                <label class="form-check-label" for="remember-me"> Se souvenir de moi </label>
+              </div>
+           <a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
+
+
+            </div>
+
+          <div class="login-btn">
+    <div>{{ form_widget(form.submit, {'attr': {'class': 'btn btn-secondary btn-lg w-100'}}) }}
+
+</div>
+
+
+            <div class="text-center my-3">
+              <p class="fw-bold text-dark">OU</p>
+            </div>
+
+            <div class="text-center">
+                 <a class="btn btn-primary w-50" href="{{ path('connect_google') }}">
+                    <i class="fab fa-google"></i> Continuer avec Google
+                </a>
+            </div>
+            <div class="text-center my-3">
+              <!-- Lien texte pour l'inscription -->
+            <div class="text-center">
+              <a href="{{ path('app_register') }}" class="register-link">Ma3andkch compte ? Yala Inscrivez-vous !</a>
+            </div>
+
+            {{ form_end(form) }}
+               {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const togglePasswordButton = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("password-field");
+    const icon = togglePasswordButton.querySelector("i");
+    const buttonText = document.getElementById("toggleText");
+
+    togglePasswordButton.addEventListener("click", function() {
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+            buttonText.textContent = "Cacher le mot de passe";
+            togglePasswordButton.setAttribute('aria-label', 'Cacher le mot de passe');
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+            buttonText.textContent = "Afficher le mot de passe";
+            togglePasswordButton.setAttribute('aria-label', 'Afficher le mot de passe');
+        }
+    });
+});
+
+</script>
+
+{% endblock %}

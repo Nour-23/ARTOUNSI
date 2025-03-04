@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'Offre{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 rounded-4 p-4 bg-white">
+            <h2 class="text-center mb-4 text-dark">📄 Détails de l'Offre</h2>
+            
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID :</strong> {{ offre.id }}</li>
+                <li class="list-group-item"><strong>Nom :</strong> {{ offre.title }}</li>
+                <li class="list-group-item"><strong>Catégorie :</strong> {{ offre.category.name }}</li>
+                <li class="list-group-item"><strong>Statut :</strong> {{ offre.status }}</li>
+                <li class="list-group-item"><strong>Description :</strong> {{ offre.description }}</li>
+            </ul>
+
+            <div class="mt-4 text-center">
+                <a href="{{ path('asma') }}" class="btn btn-primary">⬅ Retour à la liste des offres</a>
+            </div>
+
+            <!-- Section des commentaires -->
+            <div class="mt-5">
+                <h3 class="text-center text-dark">💬 Commentaires</h3>
+                <hr>
+                
+                <!-- Liste des commentaires -->
+                <div class="mt-3">
+                    {% if comments is empty %}
+                        <p class="text-muted text-center">Aucun commentaire pour le moment. Soyez le premier à en ajouter !</p>
+                    {% else %}
+                        <ul class="list-unstyled">
+                            {% for i in comments %}
+                                <li class="p-3 mb-2 bg-light rounded shadow-sm">
+                                    <strong>🗨 {{ i.text }}</strong>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Formulaire d'ajout de commentaire -->
+                <div class="mt-4">
+                    <form action="{{ path('add_comment', {'id': offre.id}) }}" method="POST">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('add_comment') }}">
+
+                        <div class="form-group">
+                            <label for="text" class="font-weight-bold">Ajoutez votre commentaire :</label>
+                            <textarea rows="3" name="text" id="text" class="form-control" placeholder="Écrivez votre commentaire ici..." required></textarea>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-success">
+                                ➕ Ajouter un commentaire
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

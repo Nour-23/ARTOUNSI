@@ -1,0 +1,44 @@
+<div class="table-responsive">
+    <table class="table table-hover table-bordered text-center">
+        <thead class="bg-light">
+            <tr class="text-dark">
+                <th scope="col" class="py-3">ID</th>
+                <th scope="col" class="py-3">Nom</th>
+                <th scope="col" class="py-3">Catégorie</th>
+                <th scope="col" class="py-3">Statut</th>
+                <th scope="col" class="py-3">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for offre in offres %}
+                <tr class="align-middle">
+                    <td>{{ offre.id }}</td>
+                    <td>{{ offre.title }}</td>
+                    <td>{{ offre.category.name }}</td>
+                    <td>
+                        {% if offre.status == 'archivé' %}
+                            <span class="badge bg-secondary">Archivé</span>
+                        {% elseif offre.status == 'inactive' %}
+                            <span class="badge bg-warning">Inactive</span>
+                        {% else %}
+                            <span class="badge bg-success">Actif</span>
+                        {% endif %}
+                    </td>
+                    <td class="d-flex justify-content-center gap-2">
+                        <a href="{{ path('app_offre_show', {'id': offre.id}) }}" class="btn btn-outline-primary btn-sm px-3">👁️ Voir</a>
+                        <a href="{{ path('edit-offre', {'id': offre.id}) }}" class="btn btn-outline-warning btn-sm px-3">✏️ Modifier</a>
+                        {% if offre.status == 'archivé' %}
+                            <a href="{{ path('restore_offre', {id: offre.id}) }}" class="btn btn-outline-success btn-sm px-3">🔄 Restaurer</a>
+                        {% else %}
+                            <a href="{{ path('archive_offre', {id: offre.id}) }}" class="btn btn-outline-secondary btn-sm px-3">📂 Archiver</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4"><em>Aucune offre trouvée.</em></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
