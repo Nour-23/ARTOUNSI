@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkartounsi2_0=self.webpackChunkartounsi2_0||[]).push([[524],{882:(s,e,o)=>{(0,o(250).E)();console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉")}},s=>{s.O(0,[250],(()=>{return e=882,s(s.s=e);var e}));s.O()}]);
