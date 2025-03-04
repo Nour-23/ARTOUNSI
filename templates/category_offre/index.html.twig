@@ -1,0 +1,51 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Gestion des Catégories{% endblock %}
+{% block body %}
+<div class="container mt-4">
+    <h1 class="text-center text-primary mb-4">📂 Liste des Catégories</h1>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <table class="table table-striped table-bordered table-hover text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category_offre in category_offres %}
+                        <tr>
+                            <td><strong>{{ category_offre.id }}</strong></td>
+                            <td>{{ category_offre.name }}</td>
+                            <td>{{ category_offre.description }}</td>
+                            <td>
+                                <a href="{{ path('app_category_offre_show_front', {'id': category_offre.id}) }}" class="btn btn-info btn-sm">
+                                    🔍 Voir
+                                </a>
+                                <a href="{{ path('app_category_offre_edit', {'id': category_offre.id}) }}" class="btn btn-warning btn-sm">
+                                    ✏️ Modifier
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">⚠️ Aucune catégorie trouvée.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="text-center mt-3">
+                <a href="{{ path('app_category_offre_new') }}" class="btn btn-success">
+                    ➕ Créer une nouvelle catégorie
+                </a>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+{% endblock %}

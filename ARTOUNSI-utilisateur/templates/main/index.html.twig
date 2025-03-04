@@ -1,0 +1,168 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Liste des Offres{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 rounded-4 p-4" style="background-color: white;">
+            <h2 class="text-center mb-4 text-dark">📋 Liste des Offres</h2>
+            
+            <!-- Section des Statistiques -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Offres Actives</h5>
+                            <p class="card-text">{{ activeOffres }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-body">
+                            <h5 class="card-title">Offres Archivées</h5>
+                            <p class="card-text">{{ archivedOffres }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">Total des Offres</h5>
+                            <p class="card-text">{{ totalOffres }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire de recherche -->
+            <form id="search-form" method="GET" class="mb-4">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input type="text" name="title" class="form-control" placeholder="Rechercher par titre" value="{{ searchTitle }}" id="searchTitle">
+                    </div>
+
+                    <div class="col-md-4">
+                        <select name="category" class="form-select" id="searchCategory">
+                            <option value="">Toutes les catégories</option>
+                            {% for category in category_offres %}
+                                <option value="{{ category.id }}" {% if category.id == searchCategory %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <select name="status" class="form-select" id="searchStatus">
+                            <option value="">Tous les statuts</option>
+                            <option value="active" {% if searchStatus == 'active' %}selected{% endif %}>Actif</option>
+                            <option value="inactive" {% if searchStatus == 'inactive' %}selected{% endif %}>Inactif</option>
+                            <option value="archivé" {% if searchStatus == 'archivé' %}selected{% endif %}>Archivé</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Bouton pour voir les offres archivées -->
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{{ path('liste_offres_archivees') }}" class="btn btn-dark shadow-sm px-4 py-2">
+                    📂 Voir les Offres Archivées
+                </a>
+            </div>
+
+            <!-- Liste des offres -->
+            <div class="table-responsive" id="offers-list">
+                <table class="table table-hover table-bordered text-center">
+                    <thead class="bg-light">
+                        <tr class="text-dark">
+                            <th scope="col" class="py-3">ID</th>
+                            <th scope="col" class="py-3">Nom</th>
+                            <th scope="col" class="py-3">Catégorie</th>
+                            <th scope="col" class="py-3">Statut</th>
+                            <th scope="col" class="py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for offre in offres %}
+                            <tr class="align-middle">
+                                <td>{{ offre.id }}</td>
+                                <td>{{ offre.title }}</td>
+                                <td>{{ offre.category.name }}</td>
+                                <td>
+                                    {% if offre.status == 'archivé' %}
+                                        <span class="badge bg-secondary">Archivé</span>
+                                    {% elseif offre.status == 'inactive' %}
+                                        <span class="badge bg-warning">Inactive</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Actif</span>
+                                    {% endif %}
+                                </td>
+                                <td class="d-flex justify-content-center gap-2">
+                                    <a href="{{ path('app_offre_show', {'id': offre.id}) }}" class="btn btn-outline-primary btn-sm px-3">👁️ Voir</a>
+                                    <a href="{{ path('edit-offre', {'id': offre.id}) }}" class="btn btn-outline-warning btn-sm px-3">✏️ Modifier</a>
+                                    {% if offre.status == 'archivé' %}
+                                        <a href="{{ path('restore_offre', {id: offre.id}) }}" class="btn btn-outline-success btn-sm px-3" onclick="return confirm('Voulez-vous restaurer cette offre ?');">🔄 Restaurer</a>
+                                    {% else %}
+                                        <a href="{{ path('archive_offre', {id: offre.id}) }}" class="btn btn-outline-secondary btn-sm px-3" onclick="return confirm('Voulez-vous archiver cette offre ?');">📂 Archiver</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <em>Aucune offre trouvée.</em>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                {{ knp_pagination_render(offres) }}
+            </div>
+
+            <!-- Bouton pour ajouter une nouvelle offre -->
+            <div class="text-center mt-4">
+                <a href="{{ path('create_offre') }}" class="btn btn-primary shadow-sm px-5 py-2">➕ Ajouter une Offre</a>
+            </div>
+        </div>
+    </div>
+
+{% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script>
+    $(document).ready(function() {
+    // Fonction pour effectuer la recherche dynamique avec AJAX
+    function searchOffers() {
+        let title = $('#searchTitle').val();
+        let category = $('#searchCategory').val();
+        let status = $('#searchStatus').val();
+        
+        $.ajax({
+            url: "{{ path('app_main') }}",
+            method: "GET",
+            data: {
+                title: title,
+                category: category,
+                status: status
+            },
+           success: function(response) {
+    $('#offers-list').html(response);
+    window.history.pushState({}, '', `?title=${title}&category=${category}&status=${status}`);
+}
+        });
+    }
+
+    // Lancer la recherche à chaque modification du champ de recherche
+    $('#searchTitle, #searchCategory, #searchStatus').on('input change', function() {
+        searchOffers();
+    });
+});
+
+    </script>
+{% endblock %}
+
+{% endblock %}

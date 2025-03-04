@@ -1,0 +1,19 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}
+    Créer une nouvelle catégorie d'offre
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-5 text-center">Créer une nouvelle catégorie d'offre</h1>
+        
+        <div class="card shadow-sm p-5">
+            {{ include('category_offre/_form.html.twig') }}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('app_category_offre_index') }}" class="btn btn-secondary btn-lg">Retour à la liste</a>
+        </div>
+    </div>
+{% endblock %}

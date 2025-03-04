@@ -1,0 +1,54 @@
+<<<<<<< HEAD
+{% extends 'base2.html.twig' %}
+=======
+{% extends 'base.html.twig' %}
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
+
+{% block title %}Category index{% endblock %}
+
+{% block body %}
+    <h1>Category index</h1>
+
+<<<<<<< HEAD
+    <table class="table" style="margin-left: 20px;">
+        <thead>
+            <tr>
+=======
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
+                <th>Nom</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+            <tr>
+<<<<<<< HEAD
+=======
+                <td>{{ category.id }}</td>
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
+                <td>{{ category.nom }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <a href="{{ path('app_category_show', {'id': category.id}) }}">show</a>
+                    <a href="{{ path('app_category_edit', {'id': category.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+<<<<<<< HEAD
+    <a href="{{ path('app_category_new') }}" style="margin-left: 20px;">Create new</a>
+=======
+    <a href="{{ path('app_category_new') }}">Create new</a>
+>>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
+{% endblock %}
