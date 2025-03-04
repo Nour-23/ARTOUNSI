@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 //////twilio
 use Twilio\Rest\Client;
 
-
 #[Route('/reclamation')]
 final class ReclamationController extends AbstractController
 {
@@ -26,6 +25,7 @@ final class ReclamationController extends AbstractController
     {
         return $this->render('reclamation/index.html.twig', [
             'reclamations' => $reclamationRepository->findAll(),
+            'layout' => 'base2.html.twig',  // Utilisation de base2 pour la vue index
         ]);
     }
 
@@ -64,22 +64,24 @@ final class ReclamationController extends AbstractController
         return $this->render('reclamation/new.html.twig', [
             'reclamation' => $reclamation,
             'form' => $form,
+            'layout' => 'base.html.twig',  // L'ajout reste en frontend avec base.html.twig
         ]);
     }
 
     #[Route('/{id<\d+>}', name: 'app_reclamation_show', methods: ['GET'])]
-public function show(int $id, ReclamationRepository $reclamationRepository): Response
-{
-    $reclamation = $reclamationRepository->find($id);
+    public function show(int $id, ReclamationRepository $reclamationRepository): Response
+    {
+        $reclamation = $reclamationRepository->find($id);
 
-    if (!$reclamation) {
-        throw $this->createNotFoundException('Reclamation not found.');
+        if (!$reclamation) {
+            throw $this->createNotFoundException('Reclamation not found.');
+        }
+
+        return $this->render('reclamation/show.html.twig', [
+            'reclamation' => $reclamation,
+            'layout' => 'base2.html.twig',  // Utilisation de base2 pour la vue show
+        ]);
     }
-
-    return $this->render('reclamation/show.html.twig', [
-        'reclamation' => $reclamation,
-    ]);
-}
 
     #[Route('/{id}/edit', name: 'app_reclamation_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
@@ -90,13 +92,13 @@ public function show(int $id, ReclamationRepository $reclamationRepository): Res
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
             
-
             return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reclamation/edit.html.twig', [
             'reclamation' => $reclamation,
             'form' => $form,
+            'layout' => 'base2.html.twig',  // Utilisation de base2 pour la vue edit
         ]);
     }
 
@@ -110,6 +112,7 @@ public function show(int $id, ReclamationRepository $reclamationRepository): Res
 
         return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }
+
     #[Route('/export', name: 'app_reclamation_export', methods: ['GET'])]
     public function exportToExcel(ReclamationRepository $reclamationRepository): Response
     {
@@ -146,11 +149,4 @@ public function show(int $id, ReclamationRepository $reclamationRepository): Res
     
         return $response;
     }
-    
-    
-
-
-
-    
-
 }

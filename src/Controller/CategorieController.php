@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-
 use App\Entity\Categorie;
 use App\Form\CategorieType;
 use App\Repository\CategorieRepository;
@@ -20,6 +19,7 @@ final class CategorieController extends AbstractController
     {
         return $this->render('categorie/index.html.twig', [         
             'categories' => $categorieRepository->findAll(),
+            'layout' => 'base2.html.twig', // Passer base2.html.twig ici
         ]);
     }
 
@@ -40,6 +40,7 @@ final class CategorieController extends AbstractController
         return $this->render('categorie/new.html.twig', [
             'categorie' => $categorie,
             'form' => $form,
+            'layout' => 'base.html.twig', // Passer base.html.twig ici
         ]);
     }
 
@@ -48,9 +49,9 @@ final class CategorieController extends AbstractController
     {
         return $this->render('categorie/show.html.twig', [
             'categorie' => $categorie,
+            'layout' => 'base2.html.twig', // Passer base2.html.twig ici
         ]);
     }
-    
 
     #[Route('/{id}/edit', name: 'app_categorie_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Categorie $categorie, EntityManagerInterface $entityManager): Response
@@ -61,13 +62,13 @@ final class CategorieController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
     
-            // Rendre directement le template "base2.html.twig"
-            return $this->render('base2.html.twig');
+            return $this->redirectToRoute('app_categorie_index', [], Response::HTTP_SEE_OTHER);
         }
     
         return $this->render('categorie/edit.html.twig', [
             'categorie' => $categorie,
             'form' => $form->createView(),
+            'layout' => 'base2.html.twig', // Passer base2.html.twig ici
         ]);
     }
     
