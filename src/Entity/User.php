@@ -8,42 +8,57 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['users'])]
+
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(message: "Le nom est obligatoire.")]
     #[Assert\Length(min: 2, max: 50, minMessage: "Le nom doit contenir au moins 2 caractères.")]
+    #[Groups(['users'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
     #[Assert\Length(min: 2, max: 50, minMessage: "Le prénom doit contenir au moins 2 caractères.")]
+    #[Groups(['users'])]
+
     private ?string $familyname = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
     #[Assert\Email(message: "L'email n'est pas valide.")]
+    #[Groups(['users'])]
+
     private ?string $email = null;
 
     #[ORM\Column(length: 8, unique: true)]
     #[Assert\NotBlank(message: "Le C.I.N est obligatoire.")]
     #[Assert\Regex(pattern: "/^\d{8}$/", message: "Le C.I.N doit contenir exactement 8 chiffres.")]
+    #[Groups(['users'])]
+
     private ?string $cin = null;
 
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Groups(['users'])]
+
     private ?string $verificationCode = null;
 
     #[ORM\Column(type: "boolean")]
+    #[Groups(['users'])]
+
     private bool $isVerified = false;
     #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Groups(['users'])]
+
     private $verificationToken;
 
     // ... getters et setters pour verificationToken
@@ -85,6 +100,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
     
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['users'])]
+
     private bool $archived = false;
     
     public function isArchived(): bool
@@ -99,6 +116,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
     // Dans votre entité User
 #[ORM\Column(type: 'boolean')]
+#[Groups(['users'])]
+
  
 private $isActive = true;
 public function getIsActive(): bool
@@ -116,6 +135,8 @@ public function getIsActive(): bool
     #[ORM\Column(length: 8)]
     #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
     #[Assert\Regex(pattern: "/^\d{8}$/", message: "Le numéro de téléphone doit contenir exactement 8 chiffres.")]
+    #[Groups(['users'])]
+
     private ?string $numtel = null;
 
     #[ORM\Column(type: "datetime_immutable", name: "date_naissance", nullable: false)]
@@ -124,20 +145,41 @@ public function getIsActive(): bool
     value: "today -18 years",  // Utilisation de 'today' et l'offset pour la date d'il y a 18 ans
     message: "Vous devez avoir au moins 18 ans."
 )]
+#[Groups(['users'])]
+
 private ?\DateTimeImmutable $dateNaissance = null;
 
     
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "L'adresse est obligatoire.")]
+    #[Groups(['users'])]
     private ?string $adresse = null;
     
    
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(['users'])]
+
     private ?string $resetToken = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['users'])]
+
     private ?\DateTimeInterface $tokenExpiry = null;
+    #[ORM\Column(length: 255)]
+#[Groups(['users'])]
+private ?string $nsc = null;
+public function getNsc(): ?string
+{
+return $this->nsc;
+}
+public function setNsc(string $nsc): static
+{
+$this->nsc = $nsc;
+return $this;
+}
+
+
 
     
     public function getResetToken(): ?string
@@ -173,25 +215,35 @@ public function isTokenExpired(): bool
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
     #[Assert\Length(min: 8, minMessage: "Le mot de passe doit contenir au moins 8 caractères.")]
     #[Assert\NotCompromisedPassword(message: "Ce mot de passe a été compromis dans une fuite de données, veuillez en choisir un autre.")]
+    #[Groups(['users'])]
     private ?string $password = null;
 
     #[Ignore]
     #[Assert\EqualTo(propertyPath: "password", message: "Les mots de passe ne correspondent pas.")]
+    #[Groups(['users'])]
     private ?string $confirmPassword = null;
 
     #[ORM\Column(type: "json")]
+    #[Groups(['users'])]
+
     private array $roles = [];
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['users'])]
+
     private ?string $google_id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['users'])]
+
 private ?string $photo = null;
 
 
     // GETTERS & SETTERS
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(['users'])]
+
     private int $loginCount = 0; // Initialisé à 0
 
     public function getLoginCount(): int

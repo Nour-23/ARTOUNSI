@@ -4,6 +4,8 @@ use App\Service\QrCodeGenerator;
 use App\Service\EmailService;
 use App\Form\ChangePasswordType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 use App\Form\PasswordChangeProfileType;
 use App\Entity\User;
@@ -640,4 +642,20 @@ public function changePassword(Request $request, Security $security, UserPasswor
     return $this->render('user/change_password.html.twig', [
         'form' => $form->createView(),
     ]);}
+    #[Route('/admin/user/search', name: 'search_users')]
+    public function searchUser(Request $request, NormalizerInterface $normalizer, UserRepository $userRepository): JsonResponse
+    {
+        $searchValue = $request->get('searchValue');
+        $users = $userRepository->findUserByNsc($searchValue);
+    
+        if (empty($users)) {
+            return new JsonResponse([]);
+        }
+    
+        $jsonContent = $normalizer->normalize($users, 'json', ['groups' => 'users']);
+        
+        return new JsonResponse($jsonContent);
+    }
+    
+
 }
