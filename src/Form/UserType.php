@@ -11,12 +11,15 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Optional;
+
 
 class UserType extends AbstractType
 {
@@ -68,6 +71,7 @@ class UserType extends AbstractType
                     new Assert\NotBlank(['message' => 'L\'adresse est requise.']),
                 ],
             ])
+           
             ->add('password', PasswordType::class, [
                 'label' => 'Mot de passe',
                 'constraints' => [
@@ -83,6 +87,7 @@ class UserType extends AbstractType
                 'mapped' => false,
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'La confirmation du mot de passe est requise.']),
+                    new Callback([$this, 'validatePasswordConfirmation']), // ✅ Ajout de la validation personnalisée
                 ],
             ])
             ->add('dateNaissance', DateType::class, [
@@ -99,8 +104,10 @@ class UserType extends AbstractType
             ])
             ->add('role', ChoiceType::class, [
                 'choices' => [
-                    'Sélectionner un rôle' => '',
+                    'Selectionner un role'=>'',
                     'Client' => 'ROLE_CLIENT',
+                    
+                   
                 ],
                 'label' => 'Rôle',
                 'expanded' => false,
@@ -109,11 +116,13 @@ class UserType extends AbstractType
                     new Assert\NotBlank(['message' => 'Le rôle est requis.']),
                 ],
             ])
+           
             ->add('photo', FileType::class, [
                 'label' => 'Photo de profil (JPEG, PNG)',
                 'mapped' => false,
-                'required' => false,
+                'required' => false, // Champ facultatif
                 'constraints' => [
+                    new Optional(), // Permet que le champ soit nul sans erreur
                     new File([
                         'maxSize' => '2M',
                         'mimeTypes' => ['image/jpeg', 'image/png'],
@@ -121,9 +130,24 @@ class UserType extends AbstractType
                     ])
                 ],
             ])
+            
+            
+            
             ->add('submit', SubmitType::class, [
                 'label' => 'Yalla, inscrivez-vous !',
             ]);
+    }
+
+    public function validatePasswordConfirmation($value, ExecutionContextInterface $context)
+    {
+        $form = $context->getRoot();
+        $password = $form->get('password')->getData();
+        
+        if ($value !== $password) {
+            $context->buildViolation('Les mots de passe doivent correspondre.')
+                ->atPath('confirmPassword')
+                ->addViolation();
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

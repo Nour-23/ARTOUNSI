@@ -1,4 +1,6 @@
+
 parameters:
+    stripe_secret_key: '%env(STRIPE_SECRET_KEY)%'
     google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
 
     images_directory: '%kernel.project_dir%/public/uploads/images'
@@ -63,12 +65,3 @@ services:
     # Enregistrement du UserRepository
     App\Repository\UserRepository:
         autowire: true
-
-        # Mailer Service Configuration
-    Symfony\Component\Mailer\MailerInterface:
-        alias: mailer
-
-    # Register the SendEventRemindersCommand explicitly as a command
-    App\Command\SendEventRemindersCommand:
-        tags:
-            - { name: 'console.command' }

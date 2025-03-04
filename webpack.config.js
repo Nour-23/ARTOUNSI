@@ -1,4 +1,5 @@
 const Encore = require('@symfony/webpack-encore');
+<<<<<<< HEAD
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -71,3 +72,30 @@ Encore
 ;
 
 module.exports = Encore.getWebpackConfig();
+=======
+const ESLintPlugin = require('eslint-webpack-plugin');
+
+// Configuration de base
+Encore
+    .setOutputPath('public/build/')
+    .setPublicPath('/build')
+    .addEntry('app', './assets/app.js')
+    .enableSingleRuntimeChunk()
+    .cleanupOutputBeforeBuild()
+    .enableBuildNotifications()
+    .enableSourceMaps(!Encore.isProduction())
+    .enableVersioning(Encore.isProduction())
+    .enableSassLoader()
+    .enablePostCssLoader()
+    .configureBabelPresetEnv((config) => {
+        config.useBuiltIns = 'usage';
+        config.corejs = 3;
+    });
+
+// Ajouter le plugin ESLint
+const config = Encore.getWebpackConfig();
+config.plugins.push(new ESLintPlugin());
+
+// Exporte la configuration finale
+module.exports = config;
+>>>>>>> 30dc6e698938d6314fade30c961e6840302f7823

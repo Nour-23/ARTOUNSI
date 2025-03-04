@@ -24,21 +24,9 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
-/node_modules
-/public
+
 /src/Security
-/node_modules
-/public
 
-<<<<<<< HEAD
-/public/uploads/
-/public/assets/
-/assets/vendor/
-###< symfony/asset-mapper ###
-
-=======
->>>>>>> 44358fd661ae3678fe4672afca37df15f4a237b5
-node_modules
 
 ###> symfony/webpack-encore-bundle ###
 /node_modules/

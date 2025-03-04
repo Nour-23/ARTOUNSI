@@ -12,7 +12,6 @@
 		<link href="{{asset('css/tiny-slider.css')}}" rel="stylesheet">
 		<link href="{{asset('css/style.css')}}" rel="stylesheet">
         {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
         {% endblock %}
 
       
@@ -39,7 +38,7 @@
 						<li><a class="nav-link" href="services.html">Service</a></li>
                         <li><a class="nav-link" href="{{ path('asma')}}">Offre</a></li>
 						<li><a class="nav-link" href="{{ path('app_article_indexfront')}}">Article</a></li>
-						<li><a class="nav-link" href="{{ path('app_participant') }}">Evenement</a></li>
+						<li><a class="nav-link" href="blog.html">Evenement</a></li>
 						<li><a class="nav-link" href="contact.html">Reclamation</a></li>
 	  
 					</ul>
@@ -78,7 +77,6 @@
 		<script src="{{asset('js/tiny-slider.js')}}"></script>
 		<script src="{{asset('js/custom.js')}}"></script>
       {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     

@@ -22,7 +22,7 @@ class EmailService
     public function sendPasswordResetEmail($user, $resetToken): void
     {
         $email = (new TemplatedEmail())
-            ->from(new Address('no-reply@yourdomain.com', 'No Reply'))
+            ->from(new Address('arttounsi@art.com', 'No Reply'))
             ->to((string) $user->getEmail())
             ->subject('Your password reset request')
             ->htmlTemplate('reset_password/email.html.twig')
@@ -34,19 +34,25 @@ class EmailService
         $this->mailer->send($email);
     }
 
-    public function sendPasswordChangeConfirmationEmail($user)
+    public function sendPasswordChangeConfirmationEmail($user): void
     {
-        $email = (new Email())
-            ->from('no-reply@votre-app.com')  // Remplace ceci par ton adresse email
+        // Générer l'URL du profil de l'utilisateur
+        $profileUrl = $this->router->generate('app_profile_principale', ['id' => $user->getId()]);
+    
+        // Créer l'email en utilisant un template Twig
+        $email = (new TemplatedEmail())
+            ->from(new Address('no-reply@votre-app.com', 'No Reply'))
             ->to($user->getEmail())
             ->subject('Confirmation de changement de mot de passe')
-            ->html(
-                '<p>Bonjour ' . $user->getName() . ',</p>' .
-                '<p>Votre mot de passe a été modifié avec succès. Si vous n\'êtes pas à l\'origine de cette demande, veuillez contacter notre support.</p>' .
-                '<p><a href="' . $this->router->generate('app_profile_principale', ['id' => $user->getId()]) . '">Cliquez ici pour accéder à votre profil</a></p>'
-            );
-
+            ->htmlTemplate('user/password_change_confirmation.html.twig')  // Utilisation du template
+            ->context([
+                'user' => $user,
+                'profileUrl' => $profileUrl,  // Passer l'URL dans le contexte
+            ]);
+    
+        // Envoyer l'email
         $this->mailer->send($email);
     }
+    
 }
 

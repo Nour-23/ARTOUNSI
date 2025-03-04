@@ -40,4 +40,32 @@ class ArticleRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function searchArticles(string $query): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.categorie', 'c')
+            ->addSelect('c');
+    
+        if ($query) {
+            $qb->where('a.nom LIKE :query')
+               ->orWhere('a.description LIKE :query')
+               ->orWhere('c.nom LIKE :query')
+               ->setParameter('query', '%'.$query.'%');
+        }
+    
+        return $qb->getQuery()->getResult();
+    }
+
+    public function sortArticlesByPrix(string $order = 'asc'): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.categorie', 'c')
+            ->addSelect('c');
+    
+        $order = strtolower($order) === 'desc' ? 'DESC' : 'ASC';
+        $qb->orderBy('a.prix', $order);
+    
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -6,13 +6,22 @@
 <div class="container">
     <h1 class="text-center my-4">Liste des Catégories</h1>
 
-    <!-- Bouton pour créer une nouvelle catégorie -->
+    <!-- Instant Search and Sort Controls -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <input type="text" id="categorie-search" class="form-control me-2 mb-2" placeholder="Rechercher par nom" style="flex: 1 1 300px;">
+        <select id="categorie-sort" class="form-select mb-2" style="max-width: 220px;">
+            <option value="asc">Nom : Croissant</option>
+            <option value="desc">Nom : Décroissant</option>
+        </select>
+    </div>
+
+    <!-- Bouton pour créer une nouvelle catégorie (page load template) -->
     <div class="text-center mb-4">
         <a href="{{ path('app_categorie_new') }}" class="btn btn-success">Créer une nouvelle catégorie</a>
     </div>
 
-    <!-- Liste des catégories sous forme de cartes -->
-    <div class="row">
+    <!-- Liste des catégories (results from full-page load or AJAX filter) -->
+    <div class="row" id="categories-container">
         {% for categorie in categories %}
             <div class="col-12 mb-4">
                 <div class="card shadow-sm">
@@ -31,5 +40,57 @@
             </div>
         {% endfor %}
     </div>
+
+    <!-- Pagination Controls (for non-AJAX navigation) -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for i in 1..totalPages %}
+                <li class="page-item {% if i == currentPage %}active{% endif %}">
+                    <a class="page-link" href="{{ path('app_categorie_index', {'page': i, 'sort': sort, 'query': query}) }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const sortSelect = document.getElementById('categorie-sort');
+    const searchInput = document.getElementById('categorie-search');
+    const container = document.getElementById('categories-container');
+
+    function performFilter() {
+        const sort = sortSelect.value;
+        const query = searchInput.value;
+        fetch("{{ path('app_categorie_filter') }}?sort=" + encodeURIComponent(sort) + "&query=" + encodeURIComponent(query))
+            .then(response => response.json())
+            .then(data => {
+                container.innerHTML = "";
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center"><p class="alert alert-warning">Aucune catégorie trouvée !</p></div>';
+                    return;
+                }
+                data.forEach(categorie => {
+                    container.innerHTML += `
+                        <div class="col-12 mb-4">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">${categorie.nom}</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="/categorie/${categorie.id}" class="btn btn-sm btn-primary">Voir</a>
+                                        <a href="/categorie/${categorie.id}/edit" class="btn btn-sm btn-warning">Modifier</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+    // instant filter when the sort dropdown or search input changes
+    sortSelect.addEventListener('change', performFilter);
+    searchInput.addEventListener('input', performFilter);
+});
+</script>
 {% endblock %}

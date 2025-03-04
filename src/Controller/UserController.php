@@ -1,8 +1,11 @@
 <?php 
 namespace App\Controller;
+use App\Service\QrCodeGenerator;
 use App\Service\EmailService;
 use App\Form\ChangePasswordType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 use App\Form\PasswordChangeProfileType;
 use App\Entity\User;
@@ -276,10 +279,12 @@ $mailer->send($email);
         ]);
     }
     #[Route('/profile/principale/{id}', name: 'app_profile_principale')]
-    public function profilePrincipale(int $id, UserRepository $userRepository): Response
+    public function profilePrincipale(int $id, UserRepository $userRepository, QrCodeGenerator $qrCodeGenerator): Response
     {
         // Récupérer l'utilisateur par son ID
         $user = $userRepository->find($id);
+        $qrCodeResult = $qrCodeGenerator->createQrCode( $user);
+
     
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
@@ -287,7 +292,9 @@ $mailer->send($email);
     
         // Passer l'utilisateur à la vue
         return $this->render('user/profilprincipale.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'qrCodeResult' => $qrCodeResult,
+
         ]);
     }
 
@@ -635,12 +642,20 @@ public function changePassword(Request $request, Security $security, UserPasswor
     return $this->render('user/change_password.html.twig', [
         'form' => $form->createView(),
     ]);}
+    #[Route('/admin/user/search', name: 'search_users')]
+    public function searchUser(Request $request, NormalizerInterface $normalizer, UserRepository $userRepository): JsonResponse
+    {
+        $searchValue = $request->get('searchValue');
+        $users = $userRepository->findUserByNsc($searchValue);
+    
+        if (empty($users)) {
+            return new JsonResponse([]);
+        }
+    
+        $jsonContent = $normalizer->normalize($users, 'json', ['groups' => 'users']);
+        
+        return new JsonResponse($jsonContent);
+    }
+    
 
-#[Route('/user', name: 'app_user')]
-public function indexx(): Response
-{
-    return $this->render('user/index.html.twig', [
-        'controller_name' => 'UserController',
-    ]);
-}
 }
