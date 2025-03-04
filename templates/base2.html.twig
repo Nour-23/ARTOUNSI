@@ -11,8 +11,9 @@ Like: www.facebook.com/keenthemes
 License: For each use you must have a valid license purchased only from above link in order to legally use the theme for your project.
 -->
 <html lang="en">
+<!--begin::Head-->
 <head><base href="">
-    <title>Metronic - the world's #1 selling Bootstrap Admin Theme Ecosystem for HTML, Vue, React, Angular &amp; Laravel by Keenthemes</title>
+    <title>ARTOUNSI </title>
     <meta name="description" content="The most advanced Bootstrap Admin Theme on Themeforest trusted by 94,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue &amp; Laravel versions. Grab your copy now and get life-time updates for free." />
     <meta name="keywords" content="Metronic, bootstrap, bootstrap 5, Angular, VueJs, React, Laravel, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -92,13 +93,13 @@ License: For each use you must have a valid license purchased only from above li
                                         <div class="menu-content d-flex align-items-center px-3">
                                             <!--begin::Avatar-->
                                             <div class="symbol symbol-50px me-5">
-                                                <img alt="Logo" src="{{ asset('assets/media/avatars/150-8.jpg') }}" />
+        <img src="{{ asset('images/logo-artounsi.png') }}" alt="Logo Artounsi" class="logo">
                                             </div>
                                             <!--end::Avatar-->
                                             <!--begin::Username-->
                                             <div class="d-flex flex-column">
                                                 <div class="fw-bolder d-flex align-items-center fs-5">
-                                                    <span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span></div>
+                                                    <span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Admin</span></div>
                                                 <a href="#" class="fw-bold text-muted text-hover-primary fs-7"></a>
                                             </div>
                                             <!--end::Username-->
@@ -119,9 +120,8 @@ License: For each use you must have a valid license purchased only from above li
 
                                     <!--end::Menu item-->
                                     <!--begin::Menu item-->
-                                    <div class="menu-item px-5">
-                                        <a href="" class="menu-link px-5">Sign Out</a>
-                                    </div>
+                <span class="bullet bullet-dot bg-success me-1"></span> <a href="{{ path('app_logout') }}" class="btn btn-gray">Se déconnecter</a>
+
                                     <!--end::Menu item-->
                                     <!--begin::Menu separator-->
                                     <div class="separator my-2"></div>
@@ -905,7 +905,19 @@ License: For each use you must have a valid license purchased only from above li
                                    
                                 </div>
                             </div>
-                        </div>  <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                             <div class="menu-sub menu-sub-accordion">
+                                <div class="menu-item">
+                                    <a class="menu-link" href="{{ path('admin_stats')}}" >
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+                                        <span class="menu-title">Statistique de Connexion des Utilisateurs </span>
+                                    </a>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                          <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
 									<span class="menu-link">
 										<span class="menu-icon">
 											<!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
@@ -1052,7 +1064,7 @@ License: For each use you must have a valid license purchased only from above li
                 <div class="header-brand">
                     <!--begin::Logo-->
                     <a style="display: inline-block;">
-                        <img alt="Logo" src="{{ asset('img/sporthub1.png') }}" class="h-25px h-lg-25px" style="opacity: 0.8; transform: scale(3.2);" />
+                        <img alt="Logo" src="{{ asset('images/logo-artounsi.png') }}" class="h-25px h-lg-25px" style="opacity: 0.8; transform: scale(3.2);" />
                     </a>
 
 

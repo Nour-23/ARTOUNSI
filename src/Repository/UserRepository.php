@@ -22,6 +22,14 @@ class UserRepository extends ServiceEntityRepository
         $entityManager->persist($user);
         if ($flush) {
             $entityManager->flush();
-        }
-    }
+        }}
+    
+    public function findUserByNsc(string $name): array
+{
+           return $this->createQueryBuilder('s')
+           ->where('s.name LIKE :name')
+           ->setParameter('name', '%'.$name.'%')
+           ->getQuery()
+           ->getResult();
+}
 }

@@ -11,8 +11,8 @@
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
+        "endroid/qr-code": "^5.0",
         "easycorp/easyadmin-bundle": "^4.24",
-        "endroid/qr-code": "^6.0",
         "knpuniversity/oauth2-client-bundle": "^2.18",
         "league/oauth2-client": "*",
         "league/oauth2-google": "*",
@@ -30,6 +30,7 @@
         "symfony/flex": "^2",
         "symfony/form": "6.4.*",
         "symfony/framework-bundle": "6.4.*",
+        "symfony/google-mailer": "6.4.*",
         "symfony/http-client": "6.4.*",
         "symfony/intl": "6.4.*",
         "symfony/mailer": "6.4.*",
@@ -56,7 +57,8 @@
         "symfony/web-profiler-bundle": "^6.0",
         "symfony/yaml": "6.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "twilio/sdk": "^8.3"
     },
     "config": {
         "allow-plugins": {

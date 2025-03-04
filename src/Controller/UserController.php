@@ -1,5 +1,11 @@
 <?php 
 namespace App\Controller;
+use App\Service\QrCodeGenerator;
+use App\Service\EmailService;
+use App\Form\ChangePasswordType;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 use App\Form\PasswordChangeProfileType;
 use App\Entity\User;
@@ -19,7 +25,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 
@@ -45,15 +53,16 @@ private $passwordEncoder;
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, MailerInterface $mailer): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier si l'email existe déjà
             $userExist = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-
+    
             if ($userExist) {
                 if ($userExist->isArchived()) {
                     $this->addFlash('error', 'Ce compte est archivé et ne peut pas être réinscrit.');
@@ -63,8 +72,10 @@ private $passwordEncoder;
                     return $this->redirectToRoute('app_login');
                 }
             }
-            $user->setRoles(['ROLE_CLIENT']); 
-
+    
+            $user->setRoles(['ROLE_CLIENT']);
+    
+            // Traitement de la photo
             $photo = $form->get('photo')->getData();
             if ($photo) {
                 try {
@@ -78,23 +89,63 @@ private $passwordEncoder;
             } else {
                 $user->setPhoto(null);
             }
-
+    
+            // Hacher le mot de passe
             $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
             $user->setPassword($hashedPassword);
+    
+            // Générer un jeton de confirmation
+            $token = bin2hex(random_bytes(32));  // Générer un jeton sécurisé
+            $user->setVerificationToken($token); // Assurez-vous que vous avez ajouté ce champ dans votre entité User
+    
             $this->entityManager->persist($user);
             $this->entityManager->flush();
+    
+            // Envoyer l'email de confirmation
+          // Envoi de l'email de confirmation avec le lien de confirmation
+// Envoi de l'email de confirmation avec le lien de confirmation
+$email = (new TemplatedEmail())
+    ->from('noreply@yourdomain.com')  // L'email de votre serveur
+    ->to($user->getEmail())
+    ->subject('Confirmez votre email')
+    ->htmlTemplate('user/confirmation_email.html.twig')  // Créez un template pour l'email de confirmation
+    ->context([
+        'confirmationToken' => $token,  // Utiliser le jeton de confirmation
+        'user' => $user,
+        'link' => $this->generateUrl('app_confirm_email', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL),  // Générer l'URL absolue
+    ]);
 
-            return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+$mailer->send($email);
+
+
+    
+            // Redirection vers la page de profil ou la page d'accueil
+            return $this->redirectToRoute('app_login');
         }
-        $userExist = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-
-
-
-
+    
         return $this->render('user/register.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/confirm_email/{token}', name: 'app_confirm_email')]
+    public function confirmEmail(string $token): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['confirmationToken' => $token]);
+    
+        if ($user) {
+            // Vérifier que le jeton est valide et confirmer l'email
+            $user->setIsVerified(true);
+            $user->setVerificationToken(null); // Supprimer le jeton après confirmation
+            $this->entityManager->flush();
+    
+            $this->addFlash('success', 'Votre email a été confirmé avec succès.');
+            return $this->redirectToRoute('app_login');
+        }
+    
+        $this->addFlash('error', 'Le lien de confirmation est invalide ou expiré.');
+        return $this->redirectToRoute('app_register');
+    }
+        
     #[Route('/login', name: 'app_login')]
     public function login(
         Request $request, 
@@ -136,14 +187,17 @@ private $passwordEncoder;
                 return $this->redirectToRoute('app_forgot_password_request');
             }
     
-            // Vérifier si l'utilisateur est archivé
-           
-    
             // Vérification du mot de passe
             if (!password_verify($password, $user->getPassword())) {
                 $this->addFlash('error', 'Mot de passe incorrect.');
                 return $this->redirectToRoute('app_login');
             }
+    
+            // Incrémenter le compteur de connexions
+            $user->setLoginCount($user->getLoginCount() + 1);
+    
+            // Sauvegarder les changements dans la base de données
+            $this->entityManager->flush();  // Utiliser l'EntityManager injecté
     
             // ✅ Redirection selon le rôle
             if (in_array('ROLE_ADMIN', $user->getRoles())) {
@@ -158,6 +212,7 @@ private $passwordEncoder;
             'error' => $error,
         ]);
     }
+    
     
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
@@ -179,7 +234,7 @@ private $passwordEncoder;
         }
 
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return $this->redirectToRoute('admin_dashboard');
+            return $this->redirectToRoute('admin_stats');
         }
 
         return $this->redirectToRoute('app_profile_principale',  ['id' => $user->getId()]);
@@ -224,10 +279,12 @@ private $passwordEncoder;
         ]);
     }
     #[Route('/profile/principale/{id}', name: 'app_profile_principale')]
-    public function profilePrincipale(int $id, UserRepository $userRepository): Response
+    public function profilePrincipale(int $id, UserRepository $userRepository, QrCodeGenerator $qrCodeGenerator): Response
     {
         // Récupérer l'utilisateur par son ID
         $user = $userRepository->find($id);
+        $qrCodeResult = $qrCodeGenerator->createQrCode( $user);
+
     
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
@@ -235,7 +292,9 @@ private $passwordEncoder;
     
         // Passer l'utilisateur à la vue
         return $this->render('user/profilprincipale.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'qrCodeResult' => $qrCodeResult,
+
         ]);
     }
 
@@ -399,5 +458,204 @@ public function editPassword(
         'progress' => $progress,  // Transmettre l'avancement à la vue
     ]);
 }
+
+#[Route('/admin/stats', name: 'admin_stats')]public function index(UserRepository $userRepository, EntityManagerInterface $em)
+{
+    // Récupérer tous les utilisateurs
+    $users = $userRepository->findAll();
+
+    // Vérifier s'il y a des utilisateurs
+    if (empty($users)) {
+        return $this->render('admin/stats.html.twig', [
+            'users' => $users,
+            'totalConnections' => 0,
+            'userWithMaxLogin' => null,
+            'userWithMinLogin' => null,
+            'averageLoginCount' => 0,
+        ]);
+    }
+
+    // Calculer le total des connexions
+    $totalConnections = array_sum(array_map(function ($user) {
+        return $user ? $user->getLoginCount() : 0;
+    }, $users));
+
+    // Utilisateur avec le plus de connexions
+    $userWithMaxLogin = array_reduce($users, function ($maxUser, $user) {
+        if ($user && (!$maxUser || $user->getLoginCount() > $maxUser->getLoginCount())) {
+            return $user;
+        }
+        return $maxUser;
+    });
+
+    // Utilisateur avec le moins de connexions
+    $userWithMinLogin = array_reduce($users, function ($minUser, $user) {
+        if ($user && (!$minUser || $user->getLoginCount() < $minUser->getLoginCount())) {
+            return $user;
+        }
+        return $minUser;
+    });
+
+    // Archivage des utilisateurs avec 0 ou 1 connexion
+    foreach ($users as $user) {
+        if ($user->getLoginCount() <= 1) {
+            $user->setArchived(true);
+            $em->persist($user);
+        }
+    }
+    $em->flush();
+
+    // Calculer la moyenne des connexions
+    $averageLoginCount = count($users) > 0 ? $totalConnections / count($users) : 0;
+
+    return $this->render('admin/stats.html.twig', [
+        'users' => $users,
+        'totalConnections' => $totalConnections,
+        'userWithMaxLogin' => $userWithMaxLogin,
+        'userWithMinLogin' => $userWithMinLogin,
+        'averageLoginCount' => $averageLoginCount,
+    ]);
+}
+
+public function incrementLoginCount(EntityManagerInterface $em): Response
+{
+    // Récupérer un utilisateur, par exemple l'utilisateur avec id=1
+    $user = $em->getRepository(User::class)->find(1);
+
+    if ($user) {
+        // Incrémenter manuellement le compteur de connexions
+        $user->setLoginCount($user->getLoginCount() + 1);
+        $em->persist($user);
+        $em->flush();
+
+        return new Response('Login count incremented to: ' . $user->getLoginCount());
+    }
+
+    return new Response('User not found');
+}
+// Contrôleur pour désarchiver un utilisateur
+#[Route('/unarchive-user/{id}', name: 'unarchive_user')]
+public function unarchiveUser(User $user, EntityManagerInterface $em): Response
+{
+    // Vérifier que l'utilisateur existe et est archivé
+    if (!$user || !$user->isArchived()) {
+        $this->addFlash('error', 'Cet utilisateur n\'est pas archivé.');
+        return $this->redirectToRoute('admin_users');
+    }
+
+    // Désarchiver l'utilisateur
+    $user->setArchived(false); // Désarchiver
+    $em->persist($user);
+    $em->flush();
+
+    // Message de succès et redirection
+    $this->addFlash('success', 'L\'utilisateur a été désarchivé avec succès.');
+    return $this->redirectToRoute('admin_users'); // Rediriger après l'action
+}
+
+#[Route('/user/inactive/{id}', name: 'inactive_user')]
+public function setInactive(User $user, EntityManagerInterface $em): Response
+{
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        $this->addFlash('error', 'Utilisateur introuvable.');
+        return $this->redirectToRoute('admin_users');
+    }
+
+    // Marquer l'utilisateur comme inactif
+    $user->setIsActive(false); // Mettre l'utilisateur en inactif
+    $em->persist($user);
+    $em->flush();
+
+    // Message de succès et redirection
+    $this->addFlash('success', 'L\'utilisateur a été marqué comme inactif.');
+    return $this->redirectToRoute('admin_user_stats'); // Rediriger vers les stats
+}
+
+#[Route('/profile/admin', name: 'app_profile_admin')]
+public function profilAdmin(Security $security): Response
+{
+    // Récupérer l'utilisateur actuellement connecté
+    $user = $security->getUser();
+
+    // Vérifier si l'utilisateur est bien connecté
+    if (!$user) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+    }
+
+    // Passer l'utilisateur à la vue
+    return $this->render('user/profiladmin.html.twig', [
+        'user' => $user
+    ]);
+}
+#[Route('/change-password', name: 'change_password')]
+public function changePassword(Request $request, Security $security, UserPasswordHasherInterface $passwordHasher, EmailService $emailService)
+{
+    // Récupérer l'utilisateur actuel
+    $user = $security->getUser();
+
+    // Vérifier si l'utilisateur est authentifié
+    if (!$user) {
+        $this->addFlash('error', 'Utilisateur non connecté. Veuillez vous connecter.');
+        return $this->redirectToRoute('app_login'); // Redirection vers la page de connexion
+    }
+
+    // Assurez-vous que l'utilisateur est une instance de User
+    if (!$user instanceof User) {
+        // Gérer le cas où l'utilisateur n'est pas du bon type
+        $this->addFlash('error', 'Utilisateur invalide.');
+        return $this->redirectToRoute('app_login'); // Ou redirigez vers la page d'accueil ou une autre page de votre choix
+    }
+
+    // Créer le formulaire pour changer le mot de passe
+    $form = $this->createForm(ChangePasswordType::class);
+
+    // Gérer la soumission du formulaire
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $currentPassword = $form->get('currentPassword')->getData();
+        
+        // Vérifier l'ancien mot de passe
+        if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+            $this->addFlash('error', 'L\'ancien mot de passe est incorrect.');
+            return $this->redirectToRoute('change_password');
+        }
+
+        // Changer le mot de passe
+        $newPassword = $form->get('newPassword')->getData();
+        $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
+        $user->setPassword($hashedPassword);
+
+        // Sauvegarder l'utilisateur avec le nouveau mot de passe
+        $this->entityManager->flush();
+
+        // Envoyer un email de confirmation
+        $emailService->sendPasswordChangeConfirmationEmail($user);
+
+        // Afficher un message de succès et rediriger
+        $this->addFlash('success', 'Mot de passe changé avec succès.');
+        return $this->redirectToRoute('app_profile_principale', ['id' => $user->getId()]);
+    }
+
+    // Afficher le formulaire dans la vue
+    return $this->render('user/change_password.html.twig', [
+        'form' => $form->createView(),
+    ]);}
+    #[Route('/admin/user/search', name: 'search_users')]
+    public function searchUser(Request $request, NormalizerInterface $normalizer, UserRepository $userRepository): JsonResponse
+    {
+        $searchValue = $request->get('searchValue');
+        $users = $userRepository->findUserByNsc($searchValue);
+    
+        if (empty($users)) {
+            return new JsonResponse([]);
+        }
+    
+        $jsonContent = $normalizer->normalize($users, 'json', ['groups' => 'users']);
+        
+        return new JsonResponse($jsonContent);
+    }
+    
 
 }

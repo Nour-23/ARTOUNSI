@@ -1,4 +1,7 @@
-{% extends 'base2.html.twig' %}
+
+=======
+{% extends 'base.html.twig' %}
+
 
 {% block title %}Détails de la Formation{% endblock %}
 
@@ -22,6 +25,7 @@
                         <td>{{ formation.description }}</td>
                     </tr>
                     <tr>
+
                         <th scope="row">Date de début</th>
                         <td>{{ formation.dateDebut ? formation.dateDebut|date('d/m/Y') : 'Non spécifié' }}</td>
                     </tr>
